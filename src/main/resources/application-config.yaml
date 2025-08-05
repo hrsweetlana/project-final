@@ -1,0 +1,25 @@
+app:
+  test-mail: ${TEST_MAIL}
+
+spring:
+  datasource:
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: ${O2_GITHUB_ID}
+            client-secret: ${O2_GITHUB_SECRET}
+          google:
+            client-id: ${O2_GOOGLE_ID}
+            client-secret: ${O2_GOOGLE_SECRET}
+          gitlab:
+            client-id: ${O2_GITLAB_ID}
+            client-secret: ${O2_GITLAB_SECRET}
+  
+  mail:
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
