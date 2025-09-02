@@ -6,7 +6,11 @@ import com.javarush.jira.ref.RefType;
 import com.javarush.jira.ref.ReferenceService;
 import com.javarush.jira.ref.internal.Reference;
 import com.javarush.jira.ref.internal.ReferenceRepository;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -23,19 +27,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
+@Slf4j
 public class ReferenceControllerTest extends AbstractControllerTest {
     private static final String REST_URL = ReferenceController.REST_URL + "/";
 
     @Autowired
     private ReferenceRepository referenceRepository;
-    @Autowired
-    private ReferenceService referenceService;
 
+    @Autowired
+	private ReferenceService referenceService;
+
+    
     @BeforeEach
-    void reInit() {
-        referenceService.updateRefs(RefType.TASK);
+    void setUp() {
+		referenceService.loadReferences();
+		referenceService.updateRefs(RefType.TASK);
     }
+//    @BeforeEach
+//    void reInit() {
+//        referenceService.updateRefs(RefType.TASK);
+//    }
 
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
@@ -49,7 +60,8 @@ public class ReferenceControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void getByTypeByCode() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + RefType.TASK + "/" + TASK_CODE))
+    	log.info("getByTypeByCode reference:{}{}/{}", REST_URL, RefType.TASK,TASK_CODE);
+        perform(MockMvcRequestBuilders.get(REST_URL + RefType.TASK+ "/" + TASK_CODE))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))

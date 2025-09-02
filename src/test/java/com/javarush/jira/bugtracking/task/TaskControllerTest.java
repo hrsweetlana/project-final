@@ -5,6 +5,10 @@ import com.javarush.jira.bugtracking.UserBelongRepository;
 import com.javarush.jira.bugtracking.task.to.ActivityTo;
 import com.javarush.jira.bugtracking.task.to.TaskToExt;
 import com.javarush.jira.bugtracking.task.to.TaskToFull;
+import com.javarush.jira.ref.ReferenceService;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -45,7 +49,14 @@ class TaskControllerTest extends AbstractControllerTest {
     private ActivityRepository activityRepository;
     @Autowired
     private UserBelongRepository userBelongRepository;
-
+    @Autowired
+    private ReferenceService referenceService;
+    
+    @BeforeEach
+    void setUp() {
+		referenceService.loadReferences();
+    }
+    
     @Test
     @WithUserDetails(value = USER_MAIL)
     void get() throws Exception {

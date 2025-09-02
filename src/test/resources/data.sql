@@ -1,6 +1,6 @@
 ---------  users ----------------------
 delete
-from USER_ROLE;
+from LANA_ROLES;
 delete
 from CONTACT;
 delete
@@ -8,37 +8,41 @@ from PROFILE;
 
 delete
 from ACTIVITY;
-alter
-sequence ACTIVITY_ID_SEQ restart with 1;
+drop sequence if exists ACTIVITY_ID_SEQ;
+create sequence ACTIVITY_ID_SEQ start with 1; 
+
 delete
 from TASK;
-alter
-sequence TASK_ID_SEQ restart with 1;
+drop sequence if exists TASK_ID_SEQ;
+create sequence TASK_ID_SEQ start with 1;
+
 delete
 from SPRINT;
-alter
-sequence SPRINT_ID_SEQ restart with 1;
+drop
+sequence if exists SPRINT_ID_SEQ;
+create sequence SPRINT_ID_SEQ start with 1;
+
 delete
 from PROJECT;
-alter
-sequence PROJECT_ID_SEQ restart with 1;
+drop sequence if exists PROJECT_ID_SEQ;
+create sequence PROJECT_ID_SEQ start with 1;
 
 delete
-from USERS;
-alter
-sequence USERS_ID_SEQ restart with 1;
+from APP_USERS;
+drop sequence if exists USERS_ID_SEQ;
+create sequence USERS_ID_SEQ start with 1;
 
-insert into USERS (EMAIL, PASSWORD, FIRST_NAME, LAST_NAME, DISPLAY_NAME)
+insert into APP_USERS (EMAIL, PASSWORD, FIRST_NAME, LAST_NAME, DISPLAY_NAME)
 values ('user@gmail.com', '{noop}password', 'userFirstName', 'userLastName', 'userDisplayName'),
        ('admin@gmail.com', '{noop}admin', 'adminFirstName', 'adminLastName', 'adminDisplayName'),
        ('guest@gmail.com', '{noop}guest', 'guestFirstName', 'guestLastName', 'guestDisplayName'),
        ('manager@gmail.com', '{noop}manager', 'managerFirstName', 'managerLastName', 'managerDisplayName');
-
+       
 -- 0 DEV
 -- 1 ADMIN
 -- 2 MANAGER
 
-insert into USER_ROLE (USER_ID, ROLE)
+insert into lana_roles (app_user_id, app_roles)
 values (1, 0),
        (2, 0),
        (2, 1),
@@ -48,13 +52,12 @@ insert into PROFILE (ID, LAST_FAILED_LOGIN, LAST_LOGIN, MAIL_NOTIFICATIONS)
 values (1, null, null, 49),
        (2, null, null, 14);
 
-insert into CONTACT (ID, CODE, VALUE)
+insert into CONTACT (ID, CODE, CONTACT_VALUE)
 values (1, 'skype', 'userSkype'),
        (1, 'mobile', '+01234567890'),
        (1, 'website', 'user.com'),
        (2, 'github', 'adminGitHub'),
-       (2, 'tg', 'adminTg'),
-       (2, 'vk', 'adminVk');
+       (2, 'tg', 'adminTg');
 
 
 insert into PROJECT (code, title, description, type_code, parent_id)
@@ -87,7 +90,17 @@ values (1, 1, '2023-05-15 09:05:10', null, 'Data', null, 3, 'epic', 'in_progress
        (1, 1, '2023-05-15 14:05:10', null, 'Data', null, 4, null, null, null),
        (1, 2, '2023-05-15 12:05:10', null, 'Trees', 'Trees desc', 4, 'epic', 'in_progress', 'normal');
 
-insert into USER_BELONG (OBJECT_ID, OBJECT_TYPE, USER_ID, USER_TYPE_CODE, STARTPOINT, ENDPOINT)
+-- Додаємо колонку, яка має значення тільки для активних тасок
+ALTER TABLE USER_BELONG 
+ADD COLUMN UNIQUE_KEY BIGINT AS (CASE WHEN ENDPOINT IS NULL THEN OBJECT_ID ELSE NULL END);
+
+-- Створюємо унікальний індекс на цю колонку + решту колонок
+drop index UK_USER_BELONG;
+CREATE UNIQUE INDEX UK_USER_BELONG 
+ON USER_BELONG (UNIQUE_KEY, OBJECT_TYPE, APP_USER_ID, USER_TYPE_CODE);
+
+
+insert into USER_BELONG (OBJECT_ID, OBJECT_TYPE, APP_USER_ID, USER_TYPE_CODE, STARTPOINT, ENDPOINT)
 values (1, 2, 2, 'task_developer', '2023-06-14 08:35:10', '2023-06-14 08:55:00'),
        (1, 2, 2, 'task_reviewer', '2023-06-14 09:35:10', null),
        (1, 2, 1, 'task_developer', '2023-06-12 11:40:00', '2023-06-12 12:35:00'),
@@ -96,8 +109,8 @@ values (1, 2, 2, 'task_developer', '2023-06-14 08:35:10', '2023-06-14 08:55:00')
        (2, 2, 2, 'task_developer', '2023-06-08 07:10:00', null),
        (2, 2, 1, 'task_developer', '2023-06-09 14:48:00', null),
        (2, 2, 1, 'task_tester', '2023-06-10 16:37:00', null);
- 
---changeset hrsvitlana:delete_CODE='vk'
+    
+       
 delete 
 from CONTACT
 where CODE='vk';

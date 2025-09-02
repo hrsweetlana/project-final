@@ -2,9 +2,17 @@ package com.javarush.jira.bugtracking.sprint;
 
 import com.javarush.jira.AbstractControllerTest;
 import com.javarush.jira.bugtracking.sprint.to.SprintTo;
+import com.javarush.jira.login.User;
+import com.javarush.jira.login.internal.UserRepository;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -19,6 +27,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.sql.DataSource;
+
+@Slf4j
 class SprintControllerTest extends AbstractControllerTest {
     private static final String SPRINTS_REST_URL = REST_URL + "/sprints/";
     private static final String SPRINTS_BY_PROJECT_REST_URL = SPRINTS_REST_URL + "by-project";
@@ -31,9 +48,64 @@ class SprintControllerTest extends AbstractControllerTest {
     private static final String ENABLED = "enabled";
 
     @Autowired
+    UserRepository userRepository;
+
+//    @Test
+//    void debugUsers() {
+//    	log.info("Users from repo: {}", userRepository.findAll().stream()
+//    		    .map(User::getEmail)
+//    		    .toList());
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        log.info("Auth: {}", auth);
+//        log.info("User found in H2: {}", userRepository.findByEmailIgnoreCase(USER_MAIL));
+//
+//    }
+//
+//    @Autowired
+//    private DataSource dataSource;
+
+//    @Test
+//    void printAllTables() throws SQLException {
+//        try (Connection connection = dataSource.getConnection()) {
+//            DatabaseMetaData metaData = connection.getMetaData();
+//            try (ResultSet rs = metaData.getTables(null, null, "%", new String[]{"TABLE"})) {
+//                log.info("=== Tables in H2 database ===");
+//                while (rs.next()) {
+//                    String tableName = rs.getString("TABLE_NAME");
+//                    log.info("jira table: {}",tableName);
+//                }
+//            }
+//        }
+//    }
+    
+//    @Test
+//    void checkUsers() throws SQLException {
+//        try (Connection connection = dataSource.getConnection();
+//             Statement stmt = connection.createStatement();
+//             ResultSet rs = stmt.executeQuery("SELECT * FROM app_users")) {
+//
+//            while (rs.next()) {
+//                log.info("ID: {} EMAIL: {}",rs.getLong("id"),rs.getString("email"));
+//            }
+//        }
+//    }
+    
+//    @Test
+//    void checkUsersUsers() throws SQLException {
+//        try (Connection connection = dataSource.getConnection();
+//             Statement stmt = connection.createStatement();
+//             ResultSet rs = stmt.executeQuery("SELECT * FROM users")) {
+//
+//            while (rs.next()) {
+//                log.info("ID: {} EMAIL: {}",rs.getLong("id"),rs.getString("email"));
+//            }
+//        }
+//    }
+    @Autowired
     SprintRepository repository;
 
     @Test
+    //@WithMockUser(username = "user@gmail.com")
     @WithUserDetails(value = USER_MAIL)
     void get() throws Exception {
         perform(MockMvcRequestBuilders.get(SPRINTS_REST_URL + SPRINT1_ID))

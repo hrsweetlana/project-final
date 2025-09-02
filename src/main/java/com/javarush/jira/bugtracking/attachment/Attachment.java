@@ -31,7 +31,7 @@ public class Attachment extends NamedEntity {
     @Enumerated(EnumType.ORDINAL)
     @NotNull
     private ObjectType objectType;
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "app_user_id", nullable = false)
     @NotNull
     private Long userId;
 

@@ -19,9 +19,12 @@ public abstract class AbstractUserController {
 
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
+    	log.info("init binder annotation");
         Object target = binder.getTarget();
         if (target != null && emailValidator.supports(target.getClass())) {
+        	log.info("binder is nort empty");              
             binder.addValidators(emailValidator);
+            log.info("add validators");
         }
     }
 

@@ -4,6 +4,11 @@ import com.javarush.jira.AbstractControllerTest;
 import com.javarush.jira.bugtracking.project.Project;
 import com.javarush.jira.bugtracking.project.ProjectRepository;
 import com.javarush.jira.common.BaseHandler;
+import com.javarush.jira.ref.ReferenceService;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -25,7 +30,14 @@ public class ProjectControllerTest extends AbstractControllerTest {
 
     @Autowired
     private ProjectRepository projectRepository;
+    @Autowired
+	private ReferenceService referenceService;
 
+    @BeforeEach
+    void setUp() {
+		referenceService.loadReferences();
+    }
+    
     @Test
     @WithUserDetails(value = USER_MAIL)
     void get() throws Exception {

@@ -3,23 +3,38 @@ package com.javarush.jira.login.internal.web;
 import com.javarush.jira.AbstractControllerTest;
 import com.javarush.jira.login.UserTo;
 import com.javarush.jira.login.internal.verification.ConfirmData;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Objects;
+
+import javax.sql.DataSource;
 
 import static com.javarush.jira.login.internal.web.RegisterController.REGISTER_URL;
 import static com.javarush.jira.login.internal.web.UserTestData.TO_MATCHER;
 import static com.javarush.jira.login.internal.web.UserTestData.USER_MAIL;
+import static com.javarush.jira.login.internal.web.UserTestData.userToEmailTaken;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Slf4j
 class RegisterControllerTest extends AbstractControllerTest {
 
-    @Test
+	@Autowired
+    private DataSource dataSource;
+
+	@Test
     void showRegisterPage() throws Exception {
         perform(MockMvcRequestBuilders.get(REGISTER_URL))
                 .andExpect(status().isOk())
@@ -84,11 +99,20 @@ class RegisterControllerTest extends AbstractControllerTest {
 
     @Test
     void registerDuplicateEmail() throws Exception {
+    	
+   
+//            try (Connection connection = dataSource.getConnection();
+//                 Statement stmt = connection.createStatement();
+//                 ResultSet rs = stmt.executeQuery("SELECT * FROM app_users")) {
+//
+//                while (rs.next()) {
+//                    log.info("ID: {} EMAIL: {}",rs.getLong("id"),rs.getString("email"));
+//                }
+//            }
+     
+            
         perform(MockMvcRequestBuilders.post(REGISTER_URL)
-                .param("email", USER_MAIL)
-                .param("password", "newPassword")
-                .param("firstName", "newName")
-                .param("lastName", "newLastName")
+                .flashAttr("userTo", userToEmailTaken)
                 .with(csrf()))
                 .andExpect(model().attributeHasFieldErrorCode("userTo", "email", "Duplicate"))
                 .andExpect(status().isOk())

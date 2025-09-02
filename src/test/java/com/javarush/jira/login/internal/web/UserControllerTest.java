@@ -5,6 +5,7 @@ import com.javarush.jira.login.User;
 import com.javarush.jira.login.UserTo;
 import com.javarush.jira.login.internal.UserMapper;
 import com.javarush.jira.login.internal.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -23,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Slf4j
 class UserControllerTest extends AbstractControllerTest {
 
     @Autowired
@@ -182,4 +184,11 @@ class UserControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.post(REST_URL + "/change_password"))
                 .andExpect(status().isUnauthorized());
     }
+    
+//    @Test
+//    void printUserId() {
+//    	repository.findAll()
+//        .forEach(user -> log.info("User ID: {}, email{}", user.getId(), user.getEmail()));
+//
+//    }
 }

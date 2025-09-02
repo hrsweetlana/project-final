@@ -29,7 +29,8 @@ public class UserTestData {
     public static final User guest = new User(GUEST_ID, GUEST_MAIL, "guest", "guestFirstName", "guestLastName",
             "guestDisplayName");
     public static final User manager = new User(MANAGER_ID, MANAGER_MAIL, "manager", "managerFirstName", "managerLastName", "managerDisplayName", Role.MANAGER);
-
+    public static final UserTo userToEmailTaken = new UserTo(null, USER_MAIL, "password2", "userFirstName2", "userLastName2", "userDisplayName2");  
+    
     public static User getNew() {
         return new User(null, "new@gmail.com", "newPassword", "newFirstName", "newLastName", "newDisplayName", Role.DEV);
     }

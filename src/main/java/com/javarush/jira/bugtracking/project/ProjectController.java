@@ -32,7 +32,7 @@ public class ProjectController {
     }
 
     @PostMapping(path = "/mngr/projects", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Project> create(@Valid @RequestBody ProjectTo projectTo) {
+    public ResponseEntity<Project> create(@Valid @RequestBody ProjectTo projectTo) { // consider returning ProjectTo 
         Project created = handler.createWithBelong(projectTo, PROJECT, "project_author");
         return createdResponse(REST_URL + "/projects", created);
     }

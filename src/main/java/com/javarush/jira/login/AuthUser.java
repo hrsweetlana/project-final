@@ -2,12 +2,14 @@ package com.javarush.jira.login;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import static java.util.Objects.requireNonNull;
-
+@Slf4j
 public class AuthUser extends org.springframework.security.core.userdetails.User {
 
     @Getter
@@ -22,6 +24,7 @@ public class AuthUser extends org.springframework.security.core.userdetails.User
 
     public static AuthUser safeGet() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        log.info("authentication from AuthUser: {}", auth);
         if (auth == null) {
             return null;
         }

@@ -51,6 +51,10 @@ public class AppConfig {
     public boolean isTest() {
         return env.acceptsProfiles(Profiles.of("test"));
     }
+    
+    public boolean isDev() {
+    	return env.acceptsProfiles(Profiles.of("dev"));
+    }
 
     @Autowired
     void configureAndStoreObjectMapper(ObjectMapper objectMapper) {

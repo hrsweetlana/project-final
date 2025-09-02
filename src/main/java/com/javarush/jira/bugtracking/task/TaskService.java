@@ -39,7 +39,7 @@ public class TaskService {
     private final SprintRepository sprintRepository;
     private final TaskExtMapper extMapper;
     private final UserBelongRepository userBelongRepository;
-
+    
     @Transactional
     public void changeStatus(long taskId, String statusCode) {
         Assert.notNull(statusCode, "statusCode must not be null");

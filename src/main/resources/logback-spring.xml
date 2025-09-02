@@ -13,7 +13,7 @@
         </root>
     </springProfile>
 
-    <springProfile name="prod">
+    <springProfile name="test">
         <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <file>logs/jirarush.log</file>
             <encoder>

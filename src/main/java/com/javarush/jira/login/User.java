@@ -29,7 +29,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "users")
+@Table(name = "app_users")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -65,13 +65,13 @@ public class User extends TimestampEntry implements HasIdAndEmail, Serializable 
     @Column(name = "last_name")
     @Nullable
     private String lastName;
-    @CollectionTable(name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id"),
-            uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "role"}, name = "uk_user_role"))
-    @Column(name = "role")
+    @CollectionTable(name = "lana_roles",
+            joinColumns = @JoinColumn(name = "app_user_id", referencedColumnName = "id"),
+            uniqueConstraints = @UniqueConstraint(columnNames = {"app_user_id", "app_roles"}, name = "uk_user_role"))
+    @Column(name = "app_roles")
     @ElementCollection(fetch = FetchType.EAGER)
-    @JoinColumn
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @Enumerated(EnumType.ORDINAL)
     private Set<Role> roles;
 
     public User(User user) {

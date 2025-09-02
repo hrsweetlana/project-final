@@ -15,6 +15,6 @@ public interface TimestampRepository<T extends TimestampEntry> extends BaseRepos
         return findAll(NEWEST_FIRST);
     }
 
-    @Query("SELECT te FROM #{#entityName} te WHERE te.endpoint IS NULL OR te.endpoint >=now()")
+    @Query("SELECT te FROM #{#entityName} te WHERE te.endpoint IS NULL OR te.endpoint >=CURRENT_TIMESTAMP")
     List<T> getAllEnabled();
 }

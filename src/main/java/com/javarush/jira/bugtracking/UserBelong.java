@@ -12,7 +12,7 @@ import lombok.Setter;
 // Link user with role to any object (Project, Task, Sprint)
 @Entity
 @Table(name = "user_belong",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"object_id", "object_type", "user_id", "user_type_code"}, name = "uk_user_belong")})
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"object_id", "object_type", "app_user_id", "user_type_code"}, name = "uk_user_belong")})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,7 +29,7 @@ public class UserBelong extends TimestampEntry {
     @NotNull
     private ObjectType objectType;
 
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "app_user_id", nullable = false)
     @NotNull
     private Long userId;
 
