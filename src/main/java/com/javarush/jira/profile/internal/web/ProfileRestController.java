@@ -9,9 +9,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(value = ProfileRestController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = ProfileRestController.PROFILE_REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProfileRestController extends AbstractProfileController {
-    public static final String REST_URL = "/api/profile";
+    public static final String PROFILE_REST_URL = "/api/profile";
 
     @GetMapping
     public ProfileTo get(@AuthenticationPrincipal AuthUser authUser) {
@@ -24,4 +24,3 @@ public class ProfileRestController extends AbstractProfileController {
         super.update(profileTo, authUser.id());
     }
 }
-
