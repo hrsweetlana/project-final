@@ -27,12 +27,12 @@ public class FileUtil {
 
         File dir = new File(directoryPath);
         if (dir.exists() || dir.mkdirs()) {
-            File file = new File(directoryPath + fileName);
-            try (OutputStream outStream = new FileOutputStream(file)) {
-                outStream.write(multipartFile.getBytes());
-            } catch (IOException ex) {
-                throw new IllegalRequestDataException("Failed to upload file" + multipartFile.getOriginalFilename());
-            }
+            File file = new File(getAttachmentPath(directoryPath, fileName));
+	        try {
+				multipartFile.transferTo(file);
+			} catch (IOException e) {
+					throw new IllegalRequestDataException("Failed to upload file" + multipartFile.getOriginalFilename());
+			}
         }
     }
 
@@ -61,5 +61,16 @@ public class FileUtil {
 
     public static String getPath(String titleType) {
         return String.format(ATTACHMENT_PATH, titleType.toLowerCase());
+    }
+    
+    public static String getAttachmentPath(String directoryPath, String fileName) {
+    	Path uploadDir = Paths.get(directoryPath).toAbsolutePath();
+    	String safeFileName = fileName.replaceAll("[\\\\/:*?\"<>|]", "_");
+    	Path attachmentPath = uploadDir.resolve(safeFileName).normalize();
+    	
+    	if(!attachmentPath.startsWith(uploadDir)) {
+    		throw new SecurityException("Path traversal detected");
+    	}
+    	return attachmentPath.toString();
     }
 }
