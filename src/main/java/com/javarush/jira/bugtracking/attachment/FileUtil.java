@@ -3,19 +3,19 @@ package com.javarush.jira.bugtracking.attachment;
 import com.javarush.jira.common.error.IllegalRequestDataException;
 import com.javarush.jira.common.error.NotFoundException;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
+@Slf4j
 @UtilityClass
 public class FileUtil {
     private static final String ATTACHMENT_PATH = "./attachments/%s/";
@@ -64,7 +64,7 @@ public class FileUtil {
     }
     
     public static String getAttachmentPath(String directoryPath, String fileName) {
-    	Path uploadDir = Paths.get(directoryPath).toAbsolutePath();
+    	Path uploadDir = Paths.get(directoryPath).toAbsolutePath().normalize();
     	String safeFileName = fileName.replaceAll("[\\\\/:*?\"<>|]", "_");
     	Path attachmentPath = uploadDir.resolve(safeFileName).normalize();
     	
