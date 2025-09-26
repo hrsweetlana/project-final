@@ -65,7 +65,7 @@ public class User extends TimestampEntry implements HasIdAndEmail, Serializable 
     @Column(name = "last_name")
     @Nullable
     private String lastName;
-    @CollectionTable(name = "lana_roles",
+    @CollectionTable(name = "roles",
             joinColumns = @JoinColumn(name = "app_user_id", referencedColumnName = "id"),
             uniqueConstraints = @UniqueConstraint(columnNames = {"app_user_id", "app_roles"}, name = "uk_user_role"))
     @Column(name = "app_roles")

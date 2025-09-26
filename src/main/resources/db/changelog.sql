@@ -1,7 +1,7 @@
 --liquibase formatted sql
 
 --changeset kmpk:init_schema
-DROP TABLE IF EXISTS LANA_ROLES;
+DROP TABLE IF EXISTS ROLES;
 DROP TABLE IF EXISTS CONTACT;
 DROP TABLE IF EXISTS MAIL_CASE;
 DROP
@@ -184,7 +184,7 @@ create table ATTACHMENT
     constraint FK_ATTACHMENT foreign key (APP_USER_ID) references APP_USERS (ID)
 );
 
-create table LANA_ROLES
+create table ROLES
 (
     APP_USER_ID bigint   not null,
     APP_ROLES    smallint not null,

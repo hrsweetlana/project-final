@@ -1,6 +1,6 @@
 ---------  users ----------------------
 delete
-from LANA_ROLES;
+from ROLES;
 delete
 from CONTACT;
 delete
@@ -42,7 +42,7 @@ values ('user@gmail.com', '{noop}password', 'userFirstName', 'userLastName', 'us
 -- 1 ADMIN
 -- 2 MANAGER
 
-insert into lana_roles (app_user_id, app_roles)
+insert into roles (app_user_id, app_roles)
 values (1, 0),
        (2, 0),
        (2, 1),
