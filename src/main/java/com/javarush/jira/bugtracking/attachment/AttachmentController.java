@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,19 +23,12 @@ import static com.javarush.jira.common.BaseHandler.createdResponse;
 public class AttachmentController {
     static final String REST_URL = "/api/attachments";
     private final AttachmentRepository repository;
+    private final AttachmentService service;
 
-    @Transactional
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Attachment> upload(@RequestPart MultipartFile file, @RequestParam ObjectType type,
                                              @RequestParam Long objectId, @AuthenticationPrincipal AuthUser authUser) {
-        log.debug("upload file {} to folder {}", file.getOriginalFilename(), type.toString().toLowerCase());
-        String path = FileUtil.getPath(type.toString());
-        Attachment attachment = new Attachment(null, path, objectId, type, authUser.id(), file.getOriginalFilename());
-        Attachment created = repository.save(attachment);
-        String fileName = attachment.id() + "_" + file.getOriginalFilename();
-        attachment.setFileLink(attachment.getFileLink() + fileName);
-        FileUtil.upload(file, path, fileName);
-        return createdResponse(REST_URL, created);
+        return createdResponse(REST_URL, service.saveAttachment(file, type, objectId, authUser));
     }
 
     @DeleteMapping("/{id}")
