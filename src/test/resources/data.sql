@@ -114,3 +114,9 @@ values (1, 2, 2, 'task_developer', '2023-06-14 08:35:10', '2023-06-14 08:55:00')
 delete 
 from CONTACT
 where CODE='vk';
+
+insert into TASK_TAG(TASK_ID, TAG)
+values (1, 'task1_tag1'),
+       (1, 'task1_tag2'),
+       (2, 'task2_tag1'),
+       (2, 'task2_tag2');

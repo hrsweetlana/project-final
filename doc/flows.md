@@ -99,3 +99,32 @@
     - `ProfileUtil.checkContactsExist(profileTo.getContacts())`  чи значення поля в `ContactTo` не порожнє `@NotBlank value` Якщо об’єкт не проходить перевірку, кидається ConstraintViolationException і чи в Contact icнує такий код ReferenceService.getRefTo(RefType.CONTACT, c.getCode())), якщо нема - в Util.notNull() кидається IllegalArgumentException, який обробляється в BasicExceptionHandler put(IllegalArgumentException.class, ErrorType.BAD_DATA); ErrorType.BAD_REQUEST("Bad request", HttpStatus.UNPROCESSABLE_ENTITY), і викликається з RestExceptionHandler;
     - ProfileTo мапиться до Profile ProfileMapper.updateFromTo(), в ProfileTo первірка чи поле не порожнє `@NotBlank mailNotifications`; `ProfileUtil.notificationsToMask(to.getMailNotifications()))` перевіркиа на валідність `notifications`: перевіряється `RefType`, якщо такого нема, тоді `IllegalArgumntException`, і сетається `id` контактам `contactToSetToContactSet()` в `ProfileMapperImpl`
     - далі зберігання оновленого профілю `profileRepository.save(profile)`;
+    
+    
+# Перегляд і редагування task
+
+**1. GET /api/tasks/{id}**
+
+  - отримує id проекту, викликає `TaskServise.getId(id)`
+  - якщо таке значення існує в репозиторії `Util.checkExist(id, handler.getRepository().findFullById(id))` повертає Task
+  - task мапиться до taskToExt, в TaskFullMapperImpl полям яких нема в Task присвоюється null(`String description = null; String priorityCode = null; LocalDateTime updated = null; Integer estimate = null; List<ActivityTo> activityTos = null;`зберігатися дані з цих полів будуть в activity. А в task навпаки є поля  startpoint, endpoint,(@Mapper(config = TimestampMapper.class)) activities, tags)
+  - За id таски отримуємо список активностей `List<Activity> activities = activityHandler.getRepository().findAllByTaskIdOrderByUpdatedDesc(id)`
+  - TaskUtil.fillExtraFields(taskToFull, activities) якщо є в activity заповнені поля description, priorityCode, updated, estimate, activityTos, то вони засетаються в taskToFull
+  - в taskToFull сетається поле activities `taskToFull.setActivityTos(activityHandler.getMapper().toToList(activities))`  
+  - taskToFull
+  
+ **3. GET api/tasks/by-project/**
+   -taskHandler.getMapper() по id проекту мапить список тасків до списку to тасків і повертає List<TaskTo>
+ 
+ 
+ **2. POST /api/tasks/**
+ 
+   - викликається трансакційний метод метод `taskService.create(TaskToExt taskTo))`;
+   -  з Handlers.TaskExtHandler викликається handler.createWithBelong(taskTo, TASK, "task_author")
+     - E created = baseHandler.createFromTo(taskTo) перевіряється чи об'єкт новий, тобто чи в таски є id `ValidationUtil.checkNew(taskTo)`. TO мапиться до об'єкту Task в `baseMapper.toEntity(taskTo)`
+     - якщо (prepareForSave != null), тобто taskRepository != null  entity = prepareForSave.apply(entity) ??
+     - збарігаємо об'єкт в репозиторії `taskRepository.save(task)` з CodeTo в TaskToFull сетаються Long parentId, long projectId, Long sprintId в Task
+     - `createUserBelong(task.id(), TASK, AuthUser.authId(), task_author)`, якщо `belongRepository.findActiveAssignment(id, TASK, userId, "task_author").isEmpty())`,тобто в UserBelongRepository нема об'єкту UserBelong з id таски і автором,  то створюємо новий об'єкт UserBelong `new UserBelong(id, TASK, userId, "task_author")` і зберігаємо в репозиторії `belongRepository.save(belong)`
+     - повертаємо task
+  - поветаємо ResponseEntity<Task>, з статусом created()
+   

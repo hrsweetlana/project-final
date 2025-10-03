@@ -10,16 +10,16 @@ import java.util.Optional;
 
 @Transactional(readOnly = true)
 public interface TaskRepository extends BaseRepository<Task> {
-    @Query("SELECT t FROM Task t WHERE t.sprintId =:sprintId ORDER BY t.startpoint DESC")
+    @Query("SELECT t FROM Task t LEFT JOIN FETCH t.tags WHERE t.sprintId =:sprintId ORDER BY t.startpoint DESC")
     List<Task> findAllBySprintId(long sprintId);
 
     @Query("SELECT t FROM Task t WHERE t.projectId =:projectId AND t.sprintId IS NULL")
     List<Task> findAllByProjectIdAndSprintIsNull(long projectId);
 
-    @Query("SELECT t FROM Task t WHERE t.projectId =:projectId ORDER BY t.startpoint DESC")
+    @Query("SELECT t FROM Task t LEFT JOIN FETCH t.tags WHERE t.projectId =:projectId ORDER BY t.startpoint DESC")
     List<Task> findAllByProjectId(long projectId);
 
-    @Query("SELECT t FROM Task t JOIN FETCH t.project LEFT JOIN FETCH t.sprint LEFT JOIN FETCH t.parent WHERE t.id =:id")
+    @Query("SELECT t FROM Task t LEFT JOIN FETCH t.tags JOIN FETCH t.project LEFT JOIN FETCH t.sprint LEFT JOIN FETCH t.parent WHERE t.id =:id")
     Optional<Task> findFullById(long id);
 
     @Modifying
