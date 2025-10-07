@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Transactional(readOnly = true)
 public interface TaskRepository extends BaseRepository<Task> {
@@ -21,7 +22,16 @@ public interface TaskRepository extends BaseRepository<Task> {
 
     @Query("SELECT t FROM Task t LEFT JOIN FETCH t.tags JOIN FETCH t.project LEFT JOIN FETCH t.sprint LEFT JOIN FETCH t.parent WHERE t.id =:id")
     Optional<Task> findFullById(long id);
-
+    
+    @Query("SELECT t FROM Task t LEFT JOIN FETCH t.tags tag WHERE t.sprintId =: sprintId AND tag IN :values")
+    List<Task> findAllBySprintIdByTags(long id, Set<String> values);
+    
+    @Query("SELECT t FROM Task t LEFT JOIN FETCH t.tags tag WHERE t.projectId =: projectId AND tag IN :values")
+    List<Task> findAllByProjectIdByTags(long id, Set<String> values);
+    
+    @Query("SELECT t FROM Task t LEFT JOIN FETCH t.tags tag WHERE tag IN :values")
+    List<Task> findAllByTags(Set<String> values);
+    
     @Modifying
     @Query(value = """
             WITH RECURSIVE task_with_subtasks AS (

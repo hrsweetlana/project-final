@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.javarush.jira.common.BaseHandler.createdResponse;
 
@@ -32,128 +34,174 @@ import static com.javarush.jira.common.BaseHandler.createdResponse;
 @RequiredArgsConstructor
 public class TaskController {
 
-    public static final String REST_URL = "/api/tasks";
+	public static final String REST_URL = "/api/tasks";
 
-    private final TaskService taskService;
-    private final ActivityService activityService;
-    private final Handlers.TaskHandler handler;
-    private final Handlers.ActivityHandler activityHandler;
-    private final UserBelongRepository userBelongRepository;
+	private final TaskService taskService;
+	private final ActivityService activityService;
+	private final Handlers.TaskHandler handler;
+	private final Handlers.ActivityHandler activityHandler;
+	private final UserBelongRepository userBelongRepository;
 
+	@GetMapping("/{id}")
+	public TaskToFull get(@PathVariable long id) {
+		log.info("get task by id={}", id);
+		return taskService.get(id);
+	}
 
-    @GetMapping("/{id}")
-    public TaskToFull get(@PathVariable long id) {
-        log.info("get task by id={}", id);
-        return taskService.get(id);
-    }
+	@GetMapping("/by-sprint")
+	public List<TaskTo> getAllBySprint(@RequestParam long sprintId) {
+		log.info("get all for sprint {}", sprintId);
+		return sortTasksAsTree(handler.getMapper().toToList(handler.getRepository().findAllBySprintId(sprintId)));
+	}
 
-    @GetMapping("/by-sprint")
-    public List<TaskTo> getAllBySprint(@RequestParam long sprintId) {
-        log.info("get all for sprint {}", sprintId);
-        return sortTasksAsTree(handler.getMapper().toToList(handler.getRepository().findAllBySprintId(sprintId)));
-    }
+	private List<TaskTo> sortTasksAsTree(List<TaskTo> tasks) {
+		List<TaskTreeNode> roots = Util.makeTree(tasks, TaskTreeNode::new);
+		List<TaskTo> sortedTasks = new ArrayList<>();
+		roots.forEach(root -> {
+			sortedTasks.add(root.taskTo);
+			List<TaskTreeNode> subNodes = root.subNodes();
+			LinkedList<TaskTreeNode> stack = new LinkedList<>(subNodes);
+			while (!stack.isEmpty()) {
+				TaskTreeNode node = stack.poll();
+				sortedTasks.add(node.taskTo);
+				node.subNodes().forEach(stack::addFirst);
+			}
+		});
+		return sortedTasks;
+	}
 
-    private List<TaskTo> sortTasksAsTree(List<TaskTo> tasks) {
-        List<TaskTreeNode> roots = Util.makeTree(tasks, TaskTreeNode::new);
-        List<TaskTo> sortedTasks = new ArrayList<>();
-        roots.forEach(root -> {
-            sortedTasks.add(root.taskTo);
-            List<TaskTreeNode> subNodes = root.subNodes();
-            LinkedList<TaskTreeNode> stack = new LinkedList<>(subNodes);
-            while (!stack.isEmpty()) {
-                TaskTreeNode node = stack.poll();
-                sortedTasks.add(node.taskTo);
-                node.subNodes().forEach(stack::addFirst);
-            }
-        });
-        return sortedTasks;
-    }
+	@GetMapping("/by-project")
+	public List<TaskTo> getAllByProject(@RequestParam long projectId) {
+		log.info("get all for project {}", projectId);
+		return handler.getMapper().toToList(handler.getRepository().findAllByProjectId(projectId));
+	}
 
-    @GetMapping("/by-project")
-    public List<TaskTo> getAllByProject(@RequestParam long projectId) {
-        log.info("get all for project {}", projectId);
-        return handler.getMapper().toToList(handler.getRepository().findAllByProjectId(projectId));
-    }
+	@GetMapping("/by-sprint/tags")
+	public Set<String> getAllTagsBySprint(@RequestParam long sprintId) {
+		log.info("get all tags in sprint: {}", sprintId);
+		return handler.getRepository().findAllBySprintId(sprintId).stream().flatMap(task -> task.getTags().stream())
+				.collect(Collectors.toSet());
+	}
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Task> createWithLocation(@Valid @RequestBody TaskToExt taskTo) {
-        return createdResponse(REST_URL, taskService.create(taskTo));
-    }
+	@GetMapping("/by-project/tags")
+	public Set<String> getAllTagsByProject(@RequestParam long projectId) {
+		log.info("get all tags in project: {}", projectId);
+		return handler.getRepository().findAllByProjectId(projectId).stream().flatMap(task -> task.getTags().stream())
+				.collect(Collectors.toSet());
+	}
 
-    @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@Valid @RequestBody TaskToExt taskTo, @PathVariable long id) {
-        taskService.update(taskTo, id);
-    }
+	@GetMapping("/by-project-no-sprint/tags")
+	public Set<String> getAllTagsByProjectNoSprint(@RequestParam long projectId) {
+		log.info("get all tags in project: {}, where sprintId is null", projectId);
+		return handler.getRepository().findAllByProjectIdAndSprintIsNull(projectId).stream()
+				.flatMap(task -> task.getTags().stream()).collect(Collectors.toSet());
+	}
 
-    @PatchMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void enable(@PathVariable long id, @RequestParam boolean enabled) {
-        handler.enable(id, enabled);
-    }
+	// consider using for internal statistics and moving to admin api
+	@GetMapping("/tags")
+	public Set<String> getAllTags() {
+		log.info("get all possible task tags");
+		return handler.getRepository().findAll().stream().flatMap(task -> task.getTags().stream())
+				.collect(Collectors.toSet());
+	}
 
-    @PatchMapping("/{id}/change-status")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void changeTaskStatus(@PathVariable long id, @NotBlank @RequestParam String statusCode) {
-        log.info("change task(id={}) status to {}", id, statusCode);
-        taskService.changeStatus(id, statusCode);
-    }
+	@GetMapping("/by-sprint/by-tags")
+	public List<TaskTo> getAllBySprintByTags(@RequestParam long sprintId, @RequestParam Set<String> tags) {
+		log.info("filtering by tag: {} in sprint: {}");
+		return handler.getMapper().toToList(handler.getRepository().findAllBySprintIdByTags(sprintId, tags));
+	}
 
-    @PatchMapping("/{id}/change-sprint")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void changeTaskSprint(@PathVariable long id, @Nullable @RequestParam Long sprintId) {
-        log.info("change task(id={}) sprint to {}", id, sprintId);
-        taskService.changeSprint(id, sprintId);
-    }
+	@GetMapping("/by-project/by-tags")
+	public List<TaskTo> getAllByProjectByTags(@RequestParam long projectId, @RequestParam Set<String> tags) {
+		log.info("filtering by tag: {} in project: {}");
+		return handler.getMapper().toToList(handler.getRepository().findAllByProjectIdByTags(projectId, tags));
+	}
 
-    @GetMapping("/assignments/by-sprint")
-    public List<UserBelong> getTaskAssignmentsBySprint(@RequestParam long sprintId) {
-        log.info("get task assignments for user {} for sprint {}", AuthUser.authId(), sprintId);
-        return userBelongRepository.findActiveTaskAssignmentsForUserBySprint(AuthUser.authId(), sprintId);
-    }
+	@GetMapping("/by-tags")
+	public List<TaskTo> getAllByTags(@RequestParam Set<String> tags) {
+		log.info("filtering by tags: {}", tags);
+		return handler.getMapper().toToList(handler.getRepository().findAllByTags(tags));
+	}
 
-    @PatchMapping("/{id}/assign")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void assign(@PathVariable long id, @NotBlank @RequestParam String userType) {
-        log.info("assign user {} as {} to task {}", AuthUser.authId(), userType, id);
-        taskService.assign(id, userType, AuthUser.authId());
-    }
+	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.CREATED)
+	public ResponseEntity<Task> createWithLocation(@Valid @RequestBody TaskToExt taskTo) {
+		return createdResponse(REST_URL, taskService.create(taskTo));
+	}
 
-    @PatchMapping("/{id}/unassign")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void unAssign(@PathVariable long id, @NotBlank @RequestParam String userType) {
-        log.info("unassign user {} as {} from task {}", AuthUser.authId(), userType, id);
-        taskService.unAssign(id, userType, AuthUser.authId());
-    }
+	@PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void update(@Valid @RequestBody TaskToExt taskTo, @PathVariable long id) {
+		taskService.update(taskTo, id);
+	}
 
-    @GetMapping("/{id}/comments")
-    public List<ActivityTo> getComments(@PathVariable long id) {
-        log.info("get comments for task with id={}", id);
-        return activityHandler.getMapper().toToList(activityHandler.getRepository().findAllComments(id));
-    }
+	@PatchMapping("/{id}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void enable(@PathVariable long id, @RequestParam boolean enabled) {
+		handler.enable(id, enabled);
+	}
 
-    @PostMapping(value = "/activities", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    public Activity create(@Valid @RequestBody ActivityTo activityTo) {
-        return activityService.create(activityTo);
-    }
+	@PatchMapping("/{id}/change-status")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void changeTaskStatus(@PathVariable long id, @NotBlank @RequestParam String statusCode) {
+		log.info("change task(id={}) status to {}", id, statusCode);
+		taskService.changeStatus(id, statusCode);
+	}
 
-    @PutMapping(path = "/activities/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@Valid @RequestBody ActivityTo activityTo, @PathVariable long id) {
-        activityService.update(activityTo, id);
-    }
+	@PatchMapping("/{id}/change-sprint")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void changeTaskSprint(@PathVariable long id, @Nullable @RequestParam Long sprintId) {
+		log.info("change task(id={}) sprint to {}", id, sprintId);
+		taskService.changeSprint(id, sprintId);
+	}
 
-    @DeleteMapping("/activities/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable long id) {
-        activityService.delete(id);
-    }
+	@GetMapping("/assignments/by-sprint")
+	public List<UserBelong> getTaskAssignmentsBySprint(@RequestParam long sprintId) {
+		log.info("get task assignments for user {} for sprint {}", AuthUser.authId(), sprintId);
+		return userBelongRepository.findActiveTaskAssignmentsForUserBySprint(AuthUser.authId(), sprintId);
+	}
 
-    private record TaskTreeNode(TaskTo taskTo, List<TaskTreeNode> subNodes) implements ITreeNode<TaskTo, TaskTreeNode> {
-        public TaskTreeNode(TaskTo taskTo) {
-            this(taskTo, new LinkedList<>());
-        }
-    }
+	@PatchMapping("/{id}/assign")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void assign(@PathVariable long id, @NotBlank @RequestParam String userType) {
+		log.info("assign user {} as {} to task {}", AuthUser.authId(), userType, id);
+		taskService.assign(id, userType, AuthUser.authId());
+	}
+
+	@PatchMapping("/{id}/unassign")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void unAssign(@PathVariable long id, @NotBlank @RequestParam String userType) {
+		log.info("unassign user {} as {} from task {}", AuthUser.authId(), userType, id);
+		taskService.unAssign(id, userType, AuthUser.authId());
+	}
+
+	@GetMapping("/{id}/comments")
+	public List<ActivityTo> getComments(@PathVariable long id) {
+		log.info("get comments for task with id={}", id);
+		return activityHandler.getMapper().toToList(activityHandler.getRepository().findAllComments(id));
+	}
+
+	@PostMapping(value = "/activities", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.CREATED)
+	public Activity create(@Valid @RequestBody ActivityTo activityTo) {
+		return activityService.create(activityTo);
+	}
+
+	@PutMapping(path = "/activities/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void update(@Valid @RequestBody ActivityTo activityTo, @PathVariable long id) {
+		activityService.update(activityTo, id);
+	}
+
+	@DeleteMapping("/activities/{id}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void delete(@PathVariable long id) {
+		activityService.delete(id);
+	}
+
+	private record TaskTreeNode(TaskTo taskTo, List<TaskTreeNode> subNodes) implements ITreeNode<TaskTo, TaskTreeNode> {
+		public TaskTreeNode(TaskTo taskTo) {
+			this(taskTo, new LinkedList<>());
+		}
+	}
 }
