@@ -101,19 +101,20 @@ public class TaskController {
 	@GetMapping("/tags")
 	public Set<String> getAllTags() {
 		log.info("get all possible task tags");
-		return handler.getRepository().findAll().stream().flatMap(task -> task.getTags().stream())
+		return handler.getRepository().findAllTags().stream().flatMap(task -> task.getTags().stream())
 				.collect(Collectors.toSet());
 	}
 
 	@GetMapping("/by-sprint/by-tags")
 	public List<TaskTo> getAllBySprintByTags(@RequestParam long sprintId, @RequestParam Set<String> tags) {
-		log.info("filtering by tag: {} in sprint: {}");
+		log.info("filtering by tag: {} in sprint: {}", tags, sprintId);
+		//handler.getRepository().findAllBySprintIdByTags(sprintId, tags).forEach(task -> log.info("tags: {}", task.getTags()));
 		return handler.getMapper().toToList(handler.getRepository().findAllBySprintIdByTags(sprintId, tags));
 	}
 
 	@GetMapping("/by-project/by-tags")
 	public List<TaskTo> getAllByProjectByTags(@RequestParam long projectId, @RequestParam Set<String> tags) {
-		log.info("filtering by tag: {} in project: {}");
+		log.info("filtering by tag: {} in project: {}", tags, projectId);
 		return handler.getMapper().toToList(handler.getRepository().findAllByProjectIdByTags(projectId, tags));
 	}
 

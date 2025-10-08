@@ -115,8 +115,21 @@ delete
 from CONTACT
 where CODE='vk';
 
+insert into PROJECT (CODE, TITLE, DESCRIPTION, TYPE_CODE, PARENT_ID)
+values ('PR-3', 'PROJECT-3', 'test project 3', 'task_tracker', null);
+
+insert into SPRINT (STATUS_CODE, STARTPOINT, ENDPOINT, CODE, PROJECT_ID)
+values ('active', '2025-07-10 10:10:11', null, 'SP-3.001', 3);
+
+insert into TASK (TITLE, TYPE_CODE, STATUS_CODE, PROJECT_ID, SPRINT_ID, STARTPOINT)
+values ('task-8', 'task', 'todo', 2, 7, '2023-06-17 09:35:10'),
+       ('task-9', 'task', 'canceled', 3, null, '2025-10-07 09:05:00'),
+       ('task-10', 'task', 'in_progres', 3, 8, '2025-07-10 14:25:07');
+
 insert into TASK_TAG(TASK_ID, TAG)
-values (1, 'task1_tag1'),
-       (1, 'task1_tag2'),
-       (2, 'task2_tag1'),
-       (2, 'task2_tag2');
+values (1, 'pr1_sprnt1_task1_tag1'),
+       (1, 'pr1_sprnt1_task1_tag2'),
+       (2, 'pr1_sprnt1_task2_tag1'),
+       (2, 'pr1_sprnt1_task2_tag2'),
+       (10, 'pr3_sprnt8_task10_tag2');
+       

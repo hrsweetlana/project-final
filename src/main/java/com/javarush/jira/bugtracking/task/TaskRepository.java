@@ -14,7 +14,7 @@ public interface TaskRepository extends BaseRepository<Task> {
     @Query("SELECT t FROM Task t LEFT JOIN FETCH t.tags WHERE t.sprintId =:sprintId ORDER BY t.startpoint DESC")
     List<Task> findAllBySprintId(long sprintId);
 
-    @Query("SELECT t FROM Task t WHERE t.projectId =:projectId AND t.sprintId IS NULL")
+    @Query("SELECT t FROM Task t LEFT JOIN FETCH t.tags WHERE t.projectId =:projectId AND t.sprintId IS NULL")
     List<Task> findAllByProjectIdAndSprintIsNull(long projectId);
 
     @Query("SELECT t FROM Task t LEFT JOIN FETCH t.tags WHERE t.projectId =:projectId ORDER BY t.startpoint DESC")
@@ -23,11 +23,14 @@ public interface TaskRepository extends BaseRepository<Task> {
     @Query("SELECT t FROM Task t LEFT JOIN FETCH t.tags JOIN FETCH t.project LEFT JOIN FETCH t.sprint LEFT JOIN FETCH t.parent WHERE t.id =:id")
     Optional<Task> findFullById(long id);
     
-    @Query("SELECT t FROM Task t LEFT JOIN FETCH t.tags tag WHERE t.sprintId =: sprintId AND tag IN :values")
-    List<Task> findAllBySprintIdByTags(long id, Set<String> values);
+    @Query("SELECT t FROM Task t LEFT JOIN FETCH t.tags tag WHERE t.sprintId =:sprintId AND EXISTS (SELECT tag FROM t.tags tag WHERE tag IN :values)")
+    List<Task> findAllBySprintIdByTags(long sprintId, Set<String> values);
     
-    @Query("SELECT t FROM Task t LEFT JOIN FETCH t.tags tag WHERE t.projectId =: projectId AND tag IN :values")
-    List<Task> findAllByProjectIdByTags(long id, Set<String> values);
+    @Query("SELECT t FROM Task t LEFT JOIN FETCH t.tags tag WHERE t.projectId =:projectId AND EXISTS (SELECT tag FROM t.tags tag WHERE tag IN :values)")
+    List<Task> findAllByProjectIdByTags(long projectId, Set<String> values);
+    
+    @Query("SELECT t FROM Task t LEFT JOIN FETCH t.tags")
+    List<Task> findAllTags();
     
     @Query("SELECT t FROM Task t LEFT JOIN FETCH t.tags tag WHERE tag IN :values")
     List<Task> findAllByTags(Set<String> values);

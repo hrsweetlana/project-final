@@ -28,10 +28,20 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.Arrays;
+import java.util.stream.Stream;
+
 class TaskControllerTest extends AbstractControllerTest {
     private static final String TASKS_REST_URL_SLASH = REST_URL + "/";
     private static final String TASKS_BY_PROJECT_REST_URL = REST_URL + "/by-project";
     private static final String TASKS_BY_SPRINT_REST_URL = REST_URL + "/by-sprint";
+    private static final String TASKS_BY_SPRINT_BY_TAGS_REST_URL = TASKS_BY_SPRINT_REST_URL + "/by-tags";
+    private static final String TASKS_BY_PROJECT_BY_TAGS_REST_URL = TASKS_BY_PROJECT_REST_URL + "/by-tags";
+    private static final String TASKS_BY_TAGS = REST_URL + "/by-tags";
+    private static final String TAGS_BY_PROJECT_REST_URL = TASKS_BY_PROJECT_REST_URL + "/tags";
+    private static final String TAGS_BY_SPRINT_REST_URL = TASKS_BY_SPRINT_REST_URL + "/tags";
+    private static final String TAGS_BY_PROJECT_NO_SPRINT_REST_URL = REST_URL + "/by-project-no-sprint/tags";
+    private static final String TAGS_REST_URL = REST_URL + "/tags";
     private static final String ACTIVITIES_REST_URL = REST_URL + "/activities";
     private static final String ACTIVITIES_REST_URL_SLASH = REST_URL + "/activities/";
     private static final String CHANGE_STATUS = "/change-status";
@@ -41,6 +51,7 @@ class TaskControllerTest extends AbstractControllerTest {
     private static final String STATUS_CODE = "statusCode";
     private static final String USER_TYPE = "userType";
     private static final String ENABLED = "enabled";
+    private static final String TAGS ="tags";
 
     @Autowired
     private TaskRepository taskRepository;
@@ -111,7 +122,103 @@ class TaskControllerTest extends AbstractControllerTest {
                 .param(PROJECT_ID, String.valueOf(TaskTestData.PROJECT1_ID)))
                 .andExpect(status().isUnauthorized());
     }
-
+  
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    void getAllTagsBySprint() throws Exception {
+    	perform(MockMvcRequestBuilders.get(TAGS_BY_SPRINT_REST_URL)
+    	.param(SPRINT_ID, String.valueOf(TaskTestData.SPRINT5_ID)))
+    	.andExpect(status().isOk())
+    	.andDo(print())
+    	.andExpect(TAG_MATCHER.contentJson(TaskTestData.sprint5Tags));
+    } 
+    
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    void getAllTagsByProject() throws Exception {
+    	perform(MockMvcRequestBuilders.get(TAGS_BY_PROJECT_REST_URL)
+    			.param(PROJECT_ID, String.valueOf(TaskTestData.PROJECT2_ID)))
+    			.andExpect(status().isOk())
+    			.andDo(print())
+    			.andExpect(TAG_MATCHER.contentJson(TaskTestData.project2Tags));
+    			
+    }
+    
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    void getAllTagsByProjectNoSprint() throws Exception {
+    	perform(MockMvcRequestBuilders.get(TAGS_BY_PROJECT_NO_SPRINT_REST_URL)
+    			.param(PROJECT_ID, String.valueOf(TaskTestData.PROJECT3_ID)))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(TAG_MATCHER.contentJson(TaskTestData.project3Tags));
+    }
+    
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    void getAllTags() throws Exception {
+    	perform(MockMvcRequestBuilders.get(TAGS_REST_URL))
+    			.andExpect(status().isOk())
+    			.andDo(print())
+    			.andExpect(TAG_MATCHER.contentJson(TaskTestData.allTags));
+    }
+    
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    void getAllBySprintByTags() throws Exception {
+    	perform(MockMvcRequestBuilders.get(TASKS_BY_SPRINT_REST_URL)
+    			.param(SPRINT_ID, String.valueOf(TaskTestData.SPRINT1_ID))
+        		.param(TAGS, TaskTestData.project1Tags.toArray(new String[0])))
+    			.andExpect(status().isOk())
+        		.andDo(print())
+        		.andExpect(TASK_TO_MATCHER.contentJson(taskTo2, taskTo1));
+    	
+    }
+    
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    void getAllBySprintByTag() throws Exception {
+    	perform(MockMvcRequestBuilders.get(TASKS_BY_SPRINT_BY_TAGS_REST_URL)
+    			.param(SPRINT_ID, String.valueOf(TaskTestData.SPRINT1_ID))
+        		.param(TAGS, project1task2Tag2.toArray(new String[0])))
+    			.andExpect(status().isOk())
+        		.andDo(print())
+        		.andExpect(TASK_TO_MATCHER.contentJson(Arrays.asList(taskTo2)));
+    	
+    }
+    
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    void getAllByProjectByTags() throws Exception {
+    	perform(MockMvcRequestBuilders.get(TASKS_BY_PROJECT_BY_TAGS_REST_URL)
+    			.param(PROJECT_ID, String.valueOf(PROJECT1_ID))
+                .param(TAGS, Stream.concat(project1task1Tag2.stream(), project1task2Tag2.stream()).toArray(String[]::new)))
+                .andExpect(status().isOk())
+    	        .andDo(print())
+    	        .andExpect(TASK_TO_MATCHER.contentJson(Arrays.asList(taskTo1, taskTo2)));
+    }
+    
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    void getAllByTags() throws Exception {
+    	perform(MockMvcRequestBuilders.get(TASKS_BY_TAGS)
+    			.param(TAGS, project1Tags.toArray(new String[0])))
+    	        .andExpect(status().isOk())
+    	        .andDo(print())
+    	        .andExpect(TASK_TO_MATCHER.contentJson(Arrays.asList(taskTo1, taskTo2)));    
+    }
+    
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    void getAllByProjectByTag() throws Exception {
+    	perform(MockMvcRequestBuilders.get(TASKS_BY_PROJECT_BY_TAGS_REST_URL)
+    			.param(PROJECT_ID, String.valueOf(PROJECT1_ID))
+                .param(TAGS, TaskTestData.project1task2Tag2.toArray(new String[0])))
+                .andExpect(status().isOk())
+    	        .andDo(print())
+    	        .andExpect(TASK_TO_MATCHER.contentJson(Arrays.asList(taskTo2)));
+    }
+    
     @Test
     @WithUserDetails(value = USER_MAIL)
     void updateTask() throws Exception {
