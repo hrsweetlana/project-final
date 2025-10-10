@@ -29,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.Arrays;
+import java.util.Set;
 import java.util.stream.Stream;
 
 class TaskControllerTest extends AbstractControllerTest {
@@ -127,31 +128,60 @@ class TaskControllerTest extends AbstractControllerTest {
     @WithUserDetails(value = USER_MAIL)
     void getAllTagsBySprint() throws Exception {
     	perform(MockMvcRequestBuilders.get(TAGS_BY_SPRINT_REST_URL)
-    	.param(SPRINT_ID, String.valueOf(TaskTestData.SPRINT5_ID)))
-    	.andExpect(status().isOk())
-    	.andDo(print())
-    	.andExpect(TAG_MATCHER.contentJson(TaskTestData.sprint5Tags));
+    			.param(SPRINT_ID, String.valueOf(TaskTestData.SPRINT5_ID)))
+    			.andExpect(status().isOk())
+    			.andDo(print())
+    			.andExpect(TAG_MATCHER.contentJson(TaskTestData.sprint5Tags));
+    } 
+    
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    void getAllTagsBySprintNotExist() throws Exception {
+    	perform(MockMvcRequestBuilders.get(TAGS_BY_SPRINT_REST_URL)
+    			.param(SPRINT_ID, String.valueOf(SPRINT_ID_NOT_EXIST)))
+    			.andExpect(status().isOk())
+    			.andDo(print())
+    			.andExpect(TAG_MATCHER.contentJson(Set.of()));
     } 
     
     @Test
     @WithUserDetails(value = USER_MAIL)
     void getAllTagsByProject() throws Exception {
     	perform(MockMvcRequestBuilders.get(TAGS_BY_PROJECT_REST_URL)
-    			.param(PROJECT_ID, String.valueOf(TaskTestData.PROJECT2_ID)))
+    			.param(PROJECT_ID, String.valueOf(PROJECT2_ID)))
     			.andExpect(status().isOk())
     			.andDo(print())
-    			.andExpect(TAG_MATCHER.contentJson(TaskTestData.project2Tags));
-    			
+    			.andExpect(TAG_MATCHER.contentJson(project2Tags));		
+    }
+    
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    void getAllTagsByProjectNotExists() throws Exception {
+    	perform(MockMvcRequestBuilders.get(TAGS_BY_PROJECT_REST_URL)
+    			.param(PROJECT_ID, String.valueOf(PROJECT_ID_NOT_EXIST)))
+    			.andExpect(status().isOk())
+    			.andDo(print())
+    			.andExpect(TAG_MATCHER.contentJson(Set.of()));		
     }
     
     @Test
     @WithUserDetails(value = USER_MAIL)
     void getAllTagsByProjectNoSprint() throws Exception {
     	perform(MockMvcRequestBuilders.get(TAGS_BY_PROJECT_NO_SPRINT_REST_URL)
-    			.param(PROJECT_ID, String.valueOf(TaskTestData.PROJECT3_ID)))
+    			.param(PROJECT_ID, String.valueOf(PROJECT3_ID)))
                 .andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(TAG_MATCHER.contentJson(TaskTestData.project3Tags));
+                .andExpect(TAG_MATCHER.contentJson(project3Tags));
+    }
+    
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    void getAllTagsByProjectNotExistNoSprint() throws Exception {
+    	perform(MockMvcRequestBuilders.get(TAGS_BY_PROJECT_NO_SPRINT_REST_URL)
+    			.param(PROJECT_ID, String.valueOf(PROJECT_ID_NOT_EXIST)))
+    			.andExpect(status().isOk())
+    			.andDo(print())
+    			.andExpect(TAG_MATCHER.contentJson(Set.of()));
     }
     
     @Test
@@ -160,7 +190,7 @@ class TaskControllerTest extends AbstractControllerTest {
     	perform(MockMvcRequestBuilders.get(TAGS_REST_URL))
     			.andExpect(status().isOk())
     			.andDo(print())
-    			.andExpect(TAG_MATCHER.contentJson(TaskTestData.allTags));
+    			.andExpect(TAG_MATCHER.contentJson(allTags));
     }
     
     @Test
@@ -177,6 +207,17 @@ class TaskControllerTest extends AbstractControllerTest {
     
     @Test
     @WithUserDetails(value = USER_MAIL)
+    void getAllBySprintNotExistByTags() throws Exception {
+    	perform(MockMvcRequestBuilders.get(TASKS_BY_SPRINT_REST_URL)
+    			.param(SPRINT_ID, String.valueOf(SPRINT_ID_NOT_EXIST))
+    			.param(TAGS, project1Tags.toArray(new String[0])))
+    			.andExpect(status().isOk())
+    			.andDo(print())
+    			.andExpect(TASK_TO_MATCHER.contentJson(Arrays.asList()));
+    }
+    
+    @Test
+    @WithUserDetails(value = USER_MAIL)
     void getAllBySprintByTag() throws Exception {
     	perform(MockMvcRequestBuilders.get(TASKS_BY_SPRINT_BY_TAGS_REST_URL)
     			.param(SPRINT_ID, String.valueOf(TaskTestData.SPRINT1_ID))
@@ -184,6 +225,18 @@ class TaskControllerTest extends AbstractControllerTest {
     			.andExpect(status().isOk())
         		.andDo(print())
         		.andExpect(TASK_TO_MATCHER.contentJson(Arrays.asList(taskTo2)));
+    	
+    }
+    
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    void getAllBySprintByTagNotExist() throws Exception {
+    	perform(MockMvcRequestBuilders.get(TASKS_BY_SPRINT_BY_TAGS_REST_URL)
+    			.param(SPRINT_ID, String.valueOf(TaskTestData.SPRINT1_ID))
+    			.param(TAGS, notExistTag1.toArray(new String[0])))
+    			.andExpect(status().isOk())
+    			.andDo(print())
+    			.andExpect(TASK_TO_MATCHER.contentJson(Arrays.asList()));
     	
     }
     
@@ -200,6 +253,50 @@ class TaskControllerTest extends AbstractControllerTest {
     
     @Test
     @WithUserDetails(value = USER_MAIL)
+    void getAllByProjectNotExistByTags() throws Exception {
+    	perform(MockMvcRequestBuilders.get(TASKS_BY_PROJECT_BY_TAGS_REST_URL)
+    			.param(PROJECT_ID, String.valueOf(PROJECT_ID_NOT_EXIST))
+    			.param(TAGS, Stream.concat(project1task1Tag2.stream(), project1task2Tag2.stream()).toArray(String[]::new)))
+    			.andExpect(status().isOk())
+    			.andDo(print())
+    			.andExpect(TASK_TO_MATCHER.contentJson(Arrays.asList()));
+    }
+    
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    void getAllByProjectByTagsNotExist() throws Exception {
+    	perform(MockMvcRequestBuilders.get(TASKS_BY_PROJECT_BY_TAGS_REST_URL)
+    			.param(PROJECT_ID, String.valueOf(PROJECT1_ID))
+    			.param(TAGS, Stream.concat(notExistTag1.stream(), notExistTag2.stream()).toArray(String[]::new)))
+    			.andExpect(status().isOk())
+    			.andDo(print())
+    			.andExpect(TASK_TO_MATCHER.contentJson(Arrays.asList()));
+    }
+    
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    void getAllByProjectByTag() throws Exception {
+    	perform(MockMvcRequestBuilders.get(TASKS_BY_PROJECT_BY_TAGS_REST_URL)
+    			.param(PROJECT_ID, String.valueOf(PROJECT1_ID))
+                .param(TAGS, project1task2Tag2.toArray(new String[0])))
+                .andExpect(status().isOk())
+    	        .andDo(print())
+    	        .andExpect(TASK_TO_MATCHER.contentJson(Arrays.asList(taskTo2)));
+    }
+    
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    void getAllByProjectByTagNotExist() throws Exception {
+    	perform(MockMvcRequestBuilders.get(TASKS_BY_PROJECT_BY_TAGS_REST_URL)
+    			.param(PROJECT_ID, String.valueOf(PROJECT1_ID))
+                .param(TAGS, notExistTag1.toArray(new String[0])))
+                .andExpect(status().isOk())
+    	        .andDo(print())
+    	        .andExpect(TASK_TO_MATCHER.contentJson(Arrays.asList()));
+    }
+    
+    @Test
+    @WithUserDetails(value = USER_MAIL)
     void getAllByTags() throws Exception {
     	perform(MockMvcRequestBuilders.get(TASKS_BY_TAGS)
     			.param(TAGS, project1Tags.toArray(new String[0])))
@@ -210,13 +307,22 @@ class TaskControllerTest extends AbstractControllerTest {
     
     @Test
     @WithUserDetails(value = USER_MAIL)
-    void getAllByProjectByTag() throws Exception {
-    	perform(MockMvcRequestBuilders.get(TASKS_BY_PROJECT_BY_TAGS_REST_URL)
-    			.param(PROJECT_ID, String.valueOf(PROJECT1_ID))
-                .param(TAGS, TaskTestData.project1task2Tag2.toArray(new String[0])))
-                .andExpect(status().isOk())
-    	        .andDo(print())
-    	        .andExpect(TASK_TO_MATCHER.contentJson(Arrays.asList(taskTo2)));
+    void getAllByTagsNotExist() throws Exception {
+    	perform(MockMvcRequestBuilders.get(TASKS_BY_TAGS)
+    			.param(TAGS, Stream.concat(notExistTag1.stream(), notExistTag2.stream()).toArray(String[]::new)))
+    			.andExpect(status().isOk())
+    			.andDo(print())
+    			.andExpect(TASK_TO_MATCHER.contentJson(Arrays.asList()));    
+    }
+    
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    void getAllByTagNotExist() throws Exception {
+    	perform(MockMvcRequestBuilders.get(TASKS_BY_TAGS)
+    			.param(TAGS, notExistTag1.toArray(String[]::new)))
+    			.andExpect(status().isOk())
+    			.andDo(print())
+    			.andExpect(TASK_TO_MATCHER.contentJson(Arrays.asList()));    
     }
     
     @Test
@@ -233,6 +339,21 @@ class TaskControllerTest extends AbstractControllerTest {
         TASK_MATCHER.assertMatch(taskRepository.getExisted(TASK2_ID), updated);
         get(TASK2_ID, taskToFull2);
     }
+    
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    void updateTaskWithTags() throws Exception {
+    	TaskToExt updatedTo = TaskTestData.getUpdatedTaskTo();
+    	perform(MockMvcRequestBuilders.put(TASKS_REST_URL_SLASH + TASK2_ID)
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.content(writeValue(updatedTo)))
+    			.andDo(print())
+    			.andExpect(status().isNoContent());
+    	
+    	Task updated = new Task(updatedTo.getId(), updatedTo.getTitle(), updatedTo.getTypeCode(), updatedTo.getStatusCode(), updatedTo.getParentId(), updatedTo.getProjectId(), updatedTo.getSprintId(), updatedTo.getTags());
+    	TASK_MATCHER.assertMatch(taskRepository.getExisted(TASK2_ID), updated);
+    	get(TASK2_ID, taskToFull2);
+    }
 
     @Test
     @WithUserDetails(value = USER_MAIL)
@@ -246,6 +367,20 @@ class TaskControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isNoContent());
         assertEquals(activitiesCount, activityRepository.findAllByTaskIdOrderByUpdatedDesc(TASK2_ID).size());
+    }
+    
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    void updateTaskWhenOnlyTagsChanged() throws Exception {
+    	int activitiesCount = activityRepository.findAllByTaskIdOrderByUpdatedDesc(TASK2_ID).size();
+    	TaskToExt sameStateTo = new TaskToExt(TASK2_ID, taskTo2.getCode(), taskTo2.getTitle(), "Trees desc", taskTo2.getTypeCode(),
+    			taskTo2.getStatusCode(), "normal", null, 4, taskTo2.getParentId(), taskTo2.getProjectId(), taskTo2.getSprintId(), taskTo2.getTags());
+    	perform(MockMvcRequestBuilders.put(TASKS_REST_URL_SLASH + TASK2_ID)
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.content(writeValue(sameStateTo)))
+    			.andDo(print())
+    			.andExpect(status().isNoContent());
+    	assertEquals(activitiesCount, activityRepository.findAllByTaskIdOrderByUpdatedDesc(TASK2_ID).size());
     }
 
     @Test

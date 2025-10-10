@@ -10,6 +10,7 @@ import com.javarush.jira.common.to.CodeTo;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static com.javarush.jira.bugtracking.ObjectType.TASK;
 import static com.javarush.jira.login.internal.web.UserTestData.ADMIN_ID;
@@ -32,9 +33,11 @@ public class TaskTestData {
     public static final long CANCELED_TASK_ID = 7;
     public static final long SPRINT1_ID = 1;
     public static final long SPRINT5_ID = 5;
+    public static final long SPRINT_ID_NOT_EXIST = 100;
     public static final long PROJECT1_ID = 1;
     public static final long PROJECT2_ID = 2;
     public static final long PROJECT3_ID = 3;
+    public static final long PROJECT_ID_NOT_EXIST = 100;
     public static final long ACTIVITY1_ID = 1;
     public static final long NOT_FOUND = 100;
     public static final String TODO = "todo";
@@ -47,17 +50,22 @@ public class TaskTestData {
     public static final String TASK_DEVELOPER = "task_developer";
     public static final String TASK_REVIEWER = "task_reviewer";
 
-    public static final TaskTo taskTo1 = new TaskTo(TASK1_ID, "epic-" + TASK1_ID, "Data", "epic", "in_progress", null, PROJECT1_ID, SPRINT1_ID, Set.of("pr1_sprnt1_task1_tag1", "pr1_sprnt1_task1_tag2"));
-    public static final TaskTo taskTo2 = new TaskTo(TASK2_ID, "epic-" + TASK2_ID, "Trees", "epic", "in_progress", null, PROJECT1_ID, SPRINT1_ID, Set.of("pr1_sprnt1_task2_tag1", "pr1_sprnt1_task2_tag2"));
-    public static final TaskToFull taskToFull1 = new TaskToFull(TASK1_ID, "epic-1", "Data", null, "epic", "in_progress", "normal", null, 4, Set.of("pr1_sprnt1_task1_tag1", "pr1_sprnt1_task1_tag2"), null, new CodeTo(PROJECT1_ID, "PR1"), new CodeTo(SPRINT1_ID, "SP-1.001"), null);
-    public static final TaskToFull taskToFull2 = new TaskToFull(TASK2_ID, "epic-2", "Trees UPD", "task UPD", "epic", "ready_for_review", "high", null, 4, Set.of(), null, new CodeTo(PROJECT1_ID, "PR1"), new CodeTo(SPRINT1_ID, "SP-1.001"), null);
     public static final Set<String> project1Tags = Set.of("pr1_sprnt1_task1_tag1", "pr1_sprnt1_task1_tag2", "pr1_sprnt1_task2_tag1", "pr1_sprnt1_task2_tag2");
+    public static final Set<String> project1task1Tag1 = Set.of("pr1_sprnt1_task1_tag1");
     public static final Set<String> project1task1Tag2 = Set.of("pr1_sprnt1_task1_tag2");
+    public static final Set<String> project1task2Tag1 = Set.of("pr1_sprnt1_task2_tag1");
     public static final Set<String> project1task2Tag2 = Set.of("pr1_sprnt1_task2_tag2");
     public static final Set<String> project2Tags = Set.of("pr2_sprnt5_task3_tag1", "pr2_sprnt5_task4_tag1", "pr2_sprnt5_task4_tag2", "pr2_sprnt5_task4_tag3", "pr2_sprnt5_task5_tag1", "pr2_sprnt5_task6_tag1", "pr2_sprnt5_task7_tag1", "pr2_sprnt5_task7_tag2", "pr2_sprnt7_task8_tag3");
     public static final Set<String> project3Tags = Set.of("pr3_sprnt0_task9_tag1"); 
     public static final Set<String> sprint5Tags = Set.of("pr2_sprnt5_task6_tag1","pr2_sprnt5_task3_tag1","pr2_sprnt5_task7_tag2","pr2_sprnt5_task7_tag1","pr2_sprnt5_task5_tag1","pr2_sprnt5_task4_tag1","pr2_sprnt5_task4_tag3","pr2_sprnt5_task4_tag2");
     public static final Set<String> allTags = Set.of("pr1_sprnt1_task1_tag1","pr1_sprnt1_task1_tag2", "pr1_sprnt1_task2_tag1", "pr1_sprnt1_task2_tag2", "pr2_sprnt5_task3_tag1", "pr2_sprnt5_task4_tag1", "pr2_sprnt5_task4_tag2", "pr2_sprnt5_task4_tag3", "pr2_sprnt5_task5_tag1", "pr2_sprnt5_task6_tag1", "pr2_sprnt5_task7_tag1", "pr2_sprnt5_task7_tag2", "pr2_sprnt7_task8_tag3", "pr3_sprnt0_task9_tag1", "pr3_sprnt8_task10_tag2");
+    public static final Set<String> notExistTag1 = Set.of("notExist1");
+    public static final Set<String> notExistTag2 = Set.of("notExist2");
+    
+    public static final TaskTo taskTo1 = new TaskTo(TASK1_ID, "epic-" + TASK1_ID, "Data", "epic", "in_progress", null, PROJECT1_ID, SPRINT1_ID, Set.of("pr1_sprnt1_task1_tag1", "pr1_sprnt1_task1_tag2"));
+    public static final TaskTo taskTo2 = new TaskTo(TASK2_ID, "epic-" + TASK2_ID, "Trees", "epic", "in_progress", null, PROJECT1_ID, SPRINT1_ID, Set.of("pr1_sprnt1_task2_tag1", "pr1_sprnt1_task2_tag2"));
+    public static final TaskToFull taskToFull1 = new TaskToFull(TASK1_ID, "epic-1", "Data", null, "epic", "in_progress", "normal", null, 4, Set.of("pr1_sprnt1_task1_tag1", "pr1_sprnt1_task1_tag2"), null, new CodeTo(PROJECT1_ID, "PR1"), new CodeTo(SPRINT1_ID, "SP-1.001"), null);
+    public static final TaskToFull taskToFull2 = new TaskToFull(TASK2_ID, "epic-2", "Trees UPD", "task UPD", "epic", "ready_for_review", "high", null, 4,  Set.of(Stream.concat(project1task2Tag1.stream(), project1task2Tag2.stream()).toArray(String[]::new)), null, new CodeTo(PROJECT1_ID, "PR1"), new CodeTo(SPRINT1_ID, "SP-1.001"), null);
     public static final ActivityTo activityTo1ForTask1 = new ActivityTo(ACTIVITY1_ID, TASK1_ID, USER_ID, null, null, "in_progress", "low", "epic", "Data", null, 3, null);
     public static final ActivityTo activityTo2ForTask1 = new ActivityTo(ACTIVITY1_ID + 1, TASK1_ID, ADMIN_ID, null, null, null, "normal", null, "Data", null, null, null);
     public static final ActivityTo activityTo3ForTask1 = new ActivityTo(ACTIVITY1_ID + 2, TASK1_ID, USER_ID, null, null, null, null, null, "Data", null, 4, null);
@@ -85,7 +93,7 @@ public class TaskTestData {
     }
 
     public static TaskToExt getUpdatedTaskTo() {
-        return new TaskToExt(TASK2_ID, "epic-2", "Trees UPD", "task UPD", "epic", "ready_for_review", "high", null, 4, null, PROJECT1_ID, SPRINT1_ID, null);
+        return new TaskToExt(TASK2_ID, "epic-2", "Trees UPD", "task UPD", "epic", "ready_for_review", "high", null, 4, null, PROJECT1_ID, SPRINT1_ID, Set.of(Stream.concat(project1task2Tag1.stream(), project1task2Tag2.stream()).toArray(String[]::new)));
     }
 
     public static ActivityTo getUpdatedActivityTo() {

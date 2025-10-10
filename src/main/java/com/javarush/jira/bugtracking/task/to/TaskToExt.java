@@ -51,7 +51,7 @@ public class TaskToExt extends TaskTo {
                 Objects.equals(estimate, taskToExt.estimate) &&
                 Objects.equals(parentId, taskToExt.parentId) &&
                 Objects.equals(projectId, taskToExt.projectId) &&
-                //Objects.equals(getTags(), taskToExt.getTags()) &&
+                Objects.equals(getTags(), taskToExt.getTags()) &&
                 Objects.equals(sprintId, taskToExt.sprintId);
     }
 }
