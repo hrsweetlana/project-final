@@ -84,7 +84,6 @@ public class ReferenceService {
                  .collect(Collectors.groupingBy(RefTo::getRefType,
                          Collectors.collectingAndThen(Collectors.toMap(RefTo::getCode, Function.identity(), (ref1, ref2) -> ref1, LinkedHashMap::new), Collections::unmodifiableMap)));
          //log.info(refSelect.toString());
-     
     }
 
     public void updateRefs(RefType type) {

@@ -6,6 +6,8 @@ import com.javarush.jira.common.error.DataConflictException;
 import com.javarush.jira.login.AuthUser;
 import com.javarush.jira.ref.RefTo;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -13,6 +15,7 @@ import java.util.stream.Collectors;
 import static com.javarush.jira.ref.RefType.TASK_STATUS;
 import static com.javarush.jira.ref.ReferenceService.getRefs;
 
+@Slf4j
 public class TaskUtil {
 
     static Map<String, RefTo> getPossibleStatusRefs(String currentStatus) {

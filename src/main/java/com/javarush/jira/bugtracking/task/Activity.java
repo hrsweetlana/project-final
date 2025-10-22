@@ -93,4 +93,14 @@ public class Activity extends BaseEntity implements HasAuthorId {
         this.description = description;
         this.estimate = estimate;
     }
+
+	@Override
+	public String toString() {
+		return "Activity [title=" + title + ", taskId=" + taskId + ", author=" + author + ", authorId=" + authorId
+				+ ", updated=" + updated + ", comment=" + comment + ", statusCode=" + statusCode + ", priorityCode="
+				+ priorityCode + ", typeCode=" + typeCode + ", description=" + description + ", estimate=" + estimate
+				+ "]";
+	}
+    
+    
 }

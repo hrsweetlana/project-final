@@ -15,23 +15,37 @@ import com.javarush.jira.common.util.Util;
 import com.javarush.jira.login.AuthUser;
 import com.javarush.jira.ref.RefType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static com.javarush.jira.bugtracking.ObjectType.TASK;
 import static com.javarush.jira.bugtracking.task.TaskUtil.fillExtraFields;
 import static com.javarush.jira.bugtracking.task.TaskUtil.makeActivity;
+import static com.javarush.jira.bugtracking.task.TaskUtil.checkStatusChangePossible;
 import static com.javarush.jira.ref.ReferenceService.getRefTo;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TaskService {
     static final String CANNOT_ASSIGN = "Cannot assign as %s to task with status=%s";
     static final String CANNOT_UN_ASSIGN = "Cannot unassign as %s from task with status=%s";
+    static final String TEST = "test";
+    static final String REVIEW = "review";
+    static final String READY_FOR_TEST = "ready_for_test";
+    static final String READY_FOR_REVIEW = "ready_for_review";
+    static final String IN_PROGRESS = "in_progress";
+    static final String TODO = "todo";
+    
 
     private final Handlers.TaskExtHandler handler;
     private final Handlers.ActivityHandler activityHandler;
@@ -139,5 +153,83 @@ public class TaskService {
         if (!userType.equals(possibleUserType)) {
             throw new DataConflictException(String.format(assign ? CANNOT_ASSIGN : CANNOT_UN_ASSIGN, userType, task.getStatusCode()));
         }
+    }
+    
+    public long getTestingTimeSpent(Task task) {
+    	return getTimeSpent(task, TEST, REVIEW);
+    }
+
+    public long getTestingTimeWaiting(Task task) {
+    	return getTimeSpent(task, READY_FOR_TEST, READY_FOR_REVIEW);
+    }
+    
+    public long getTotalTestingTime(Task task) {
+    	return getTestingTimeSpent(task) + getTestingTimeWaiting(task);
+    }
+
+    public long getDevelopmentTimeSpent(Task task) {
+    	return getTimeSpent(task, IN_PROGRESS);
+    }
+    
+    public long getDevelopmentTimeWaiting(Task task) {
+    	return getTimeSpent(task, TODO);
+    }
+    
+    public long getTotalDevelopmentTime(Task task) {
+    	return getDevelopmentTimeSpent(task) + getDevelopmentTimeWaiting(task);
+    }
+    
+    public long getTimeSpent(Task task, String... statuses) {
+    	if (task == null || task.getId() == null) {
+    		throw new IllegalArgumentException("Task and task id must not be null");
+    	}
+    	
+    	long timeSpent = 0;
+    	long totalTimeSpent = 0;
+    	
+    	List<Activity> activities = loadActivities(task.getId());
+    	
+    	for(int i = 0; i < activities.size() - 1; i++) {
+    		Activity current = activities.get(i);
+    		Activity next = activities.get(i + 1);
+    		
+    		LocalDateTime currentUpdated = current.getUpdated();
+    		LocalDateTime nextUpdated = next.getUpdated();
+    		
+    		if (currentUpdated == null || nextUpdated == null) {
+    			log.warn("Skipping activity pair due to null updated: current={}, next={}", current, next);
+    			continue;
+    		}
+    		
+    		String currentStatus = next.getStatusCode();
+    		String nextStatus = next.getStatusCode();
+    		
+    		checkStatusChangePossible(currentStatus, nextStatus);
+    		
+    		Duration duration = Duration.between(nextUpdated, currentUpdated);
+    		timeSpent = duration.toMinutes();
+    		
+    		if (timeSpent <= 0) {
+    			log.debug("Ignored non-positive duration: {} -> {}", nextUpdated, currentUpdated);
+    		}
+    		
+    		if(calculateTimeForStatuses(next.getStatusCode(), statuses)) {
+    			totalTimeSpent = totalTimeSpent + timeSpent;
+    		}
+    	}
+    	return totalTimeSpent;
+    }
+    
+    private List<Activity> loadActivities(Long taskId) {
+    	 List<Activity> activities = activityHandler.getRepository().findAllByTaskIdOrderByUpdatedDesc(taskId);
+    	    if (activities == null) {
+    	        return Collections.emptyList();
+    	    }
+
+    	    return activities;
+    }
+    
+    private boolean calculateTimeForStatuses(String status, String...includedStatuses) {
+    	return Arrays.asList(includedStatuses).contains(status);
     }
 }

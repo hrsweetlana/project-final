@@ -113,18 +113,47 @@
   - в taskToFull сетається поле activities `taskToFull.setActivityTos(activityHandler.getMapper().toToList(activities))`  
   - taskToFull
   
- **3. GET api/tasks/by-project/**
+ **2. GET api/tasks/by-project/**
    -taskHandler.getMapper() по id проекту мапить список тасків до списку to тасків і повертає List<TaskTo>
  
  
- **2. POST /api/tasks/**
+ **3. POST /api/tasks/**
  
    - викликається трансакційний метод метод `taskService.create(TaskToExt taskTo))`;
    -  з Handlers.TaskExtHandler викликається handler.createWithBelong(taskTo, TASK, "task_author")
-     - E created = baseHandler.createFromTo(taskTo) перевіряється чи об'єкт новий, тобто чи в таски є id `ValidationUtil.checkNew(taskTo)`. TO мапиться до об'єкту Task в `baseMapper.toEntity(taskTo)`
-     - якщо (prepareForSave != null), тобто taskRepository != null  entity = prepareForSave.apply(entity) ??
+     - E created = baseHandler.createFromTo(TaskToExt taskTo) перевіряється чи об'єкт новий, тобто чи в таски є id `ValidationUtil.checkNew(taskTo)`. TO мапиться до об'єкту Task в `baseMapper.toEntity(taskTo)`
      - збарігаємо об'єкт в репозиторії `taskRepository.save(task)` з CodeTo в TaskToFull сетаються Long parentId, long projectId, Long sprintId в Task
      - `createUserBelong(task.id(), TASK, AuthUser.authId(), task_author)`, якщо `belongRepository.findActiveAssignment(id, TASK, userId, "task_author").isEmpty())`,тобто в UserBelongRepository нема об'єкту UserBelong з id таски і автором,  то створюємо новий об'єкт UserBelong `new UserBelong(id, TASK, userId, "task_author")` і зберігаємо в репозиторії `belongRepository.save(belong)`
-     - повертаємо task
+     - makeActivity(created.id(), taskTo) -> створює нову активність new Activity() четвертим параметром приймає null(updated), але   '@UpdateTimestamp @Nullable @Column(name = "updated") private LocalDateTime updated', тому перед кожним оновленням Task  поле оновиться часом зміни (при Put використовується об'єкт TaskToExt -> )
+     - `activityHandler.create(makeActivity(created.id(), taskTo))` - приймає параметром активність і зберігає її в репозиторії ActivityRepository;
+       - якщо (prepareForSave != null), тобто taskRepository != null  entity = prepareForSave.apply(entity) ??
+       - 
+     - повертаємо task (E created)
   - поветаємо ResponseEntity<Task>, з статусом created()
-   
+  
+  
+  **4. PATCH /api/tasks/{id}/change-status**
+  
+  - викликається трансакційний метод `taskService.changeStatus(id, statusCode)`
+    - `Assert.notNull` -> перевіряє, що вхідний параметр statusCode не null, в іншому випадку IllegalArgumentException, хоча в контролері вже є перевірка на @NotBlank @RequestParam String statusCode
+    - За id таски отримуємо отримуємо об'єкт task -> `Task task = handler.getRepository().getExisted(taskId)`
+    - якщо новий статус код відмінний від встановленого в task `!statusCode.equals(task.getStatusCode())`
+      - тоді перевіряється чи такий статус можливо встановити 'task.checkAndSetStatusCode(statusCode)', новий статус і текучий статус передаються в метод    'checkStatusChangePossible(this.statusCode, statusCode)', якщо можливо,  то він зміниться на новий 
+        - TaskUtil.getPossibleStatuses(currentStatus) поверне Set<String> можливих статусів для текучого статусу. 
+          - `Map<String, RefTo> taskStatusRefs = getRefs(TASK_STATUS)`, де enum RefType = TASK_STATUS.
+            - `Map<String, RefTo> getRefs(RefType refType)` з ReferenceService викликає `getExisted(refSelect, refType)` з Util, де `static Map<RefType, Map<String, RefTo>> refSelect` статична мапа, яка ініціалізується на початку роботи програми методом loadReferences(). Цей метод витягне з бази об'єкти References, але замапить їх mapper.toToList до списку трансфер об'єктів List<RefTo>; в цьому методі викликається `Util.getExisted(refSelect, refType)`, де `getExisted(Map<K,   V> map, K key) refSelect` це сама мапа, а refType це    TASK_STATUS, тобто з мапи вигляду : `static Map<RefType, Map<String, RefTo>> refSelect` `(TASK_STATUS={todo=RefTo(refType=TASK_STATUS, aux=in_progress,canceled|, splittedAux=[in_progress,canceled]))` по ключу RefType(TASK_STATUS), ми витягуємо підмапу  `Map<String, RefTo>` :
+           `todo=RefTo(refType=TASK_STATUS,            aux=in_progress,canceled|,                               splittedAux=[in_progress,canceled]), 
+	        in_progress=RefTo(refType=TASK_STATUS,      aux=ready_for_review,canceled|task_developer,           splittedAux=[ready_for_review,canceled, task_developer]), 
+			 ready_for_review=RefTo(refType=TASK_STATUS, aux=in_progress,review,canceled|,                        splittedAux=[in_progress,review,canceled]),
+			 review=RefTo(refType=TASK_STATUS,           aux=in_progress,ready_for_test,canceled|task_reviewer,   splittedAux=[in_progress,ready_for_test,canceled, task_reviewer]), 
+			 ready_for_test=RefTo(refType=TASK_STATUS,   aux=review,test,canceled|,                               splittedAux=[review,test,canceled]), 
+			 test=RefTo(refType=TASK_STATUS,             aux=done,in_progress,canceled|task_tester,               splittedAux=[done,in_progress,canceled, task_tester]), 
+			 done=RefTo(refType=TASK_STATUS,             aux=canceled|,                                           splittedAux=[canceled]), 
+			 canceled=RefTo(refType=TASK_STATUS,         aux=null,                                                splittedAux=null)`
+	      - `String aux = taskStatusRefs.get(currentStatus).getAux(0)` , витягуємо з мапи нульовий елемент масиву splitedAux(це поле є тільки в RefTo. в Reference його нема), в якому є всі можливі статуси. В масиві splitedAux, стрічка aux поділиться по or -> aux=ready_for_review,canceled|task_developer, буде splitedAux[0]=ready_for_review,canceled і splitedAux[1]=task_developer
+	      - `possibleStatuses.addAll(aux == null ? Set.of() : Set.of(aux.split(",")))`, 
+	    - повертаємо Set<String> можливих статусів (canceled|task_reviewer використовується нище в `handler.createUserBelong()`  
+	   - якщо статус змінити неможливо, тоді `throw new DataConflictException("Cannot change task status from " + currentStatus + " to " + newStatus)`
+    - створюється нова активність, туди сетається новий statusCode `Activity statusChangedActivity = new Activity(null, taskId, AuthUser.authId()); statusChangedActivity.setStatusCode(statusCode)`
+    - активнісь зберігається в бд `Activity statusChangedActivity = new Activity(null, taskId, AuthUser.authId()) statusChangedActivity.setStatusCode(statusCode)`
+    - якщо в активності є юзер `if (userType != null) { handler.createUserBelong(taskId, TASK, AuthUser.authId(), userType)`, то він зберігається в UserBelongRepository

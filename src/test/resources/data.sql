@@ -143,3 +143,22 @@ values (1, 'pr1_sprnt1_task1_tag1'),
        (9, 'pr3_sprnt0_task9_tag1'),
        (10, 'pr3_sprnt8_task10_tag2');
        
+insert into ACTIVITY(AUTHOR_ID, TASK_ID, UPDATED, COMMENT, TITLE, DESCRIPTION, ESTIMATE, TYPE_CODE, STATUS_CODE,
+                     PRIORITY_CODE)
+ values(2, 8, '2025-10-15 09:18:00', null, 'Task in to do', null, 2, 'epic', 'todo', 'normal'),                    
+       (2, 8, '2025-10-15 09:20:00', null, 'Task in progres', null, 2, 'epic', 'in_progress', 'normal'),
+	   (2, 8, '2025-10-15 09:31:00', null, 'Task in ready for review', null, 2, 'epic', 'ready_for_review', 'normal'),
+	   (2, 8, '2025-10-15 09:35:00', null, 'Task in review', null, 2, 'epic', 'review', 'normal'),
+	   (2, 8, '2025-10-15 09:40:00', null, 'Task in to do', null, 2, 'epic', 'todo', 'normal'),
+	   (2, 8, '2025-10-15 09:50:00', null, 'Task in progres', null, 2, 'epic', 'in_progress', 'normal'),
+	   (2, 8, '2025-10-15 10:00:00', null, 'Task in ready for review', null, 2, 'epic', 'ready_for_review', 'normal'),
+	   (2, 8, '2025-10-15 10:15:00', null, 'Task in review', null, 2, 'epic', 'review', 'normal'),
+	   (2, 8, '2025-10-15 10:25:00', null, 'Task in ready for test', null, 2, 'epic', 'ready_for_test', 'normal'),
+	   (2, 8, '2025-10-15 10:30:00', null, 'Task in test', null, 2, 'epic', 'test', 'normal'),
+	   (2, 8, '2025-10-15 10:40:00', null, 'Task in to do', null, 2, 'epic', 'todo', 'normal'),
+	   (2, 8, '2025-10-15 11:00:00', null, 'Task in progres', null, 2, 'epic', 'in_progress', 'normal'),
+	   (2, 8, '2025-10-15 12:00:00', null, 'Task in ready for review', null, 2, 'epic', 'ready_for_review', 'normal'),
+	   (2, 8, '2025-10-15 12:10:00', null, 'Task in review', null, 2, 'epic', 'review', 'normal'),
+	   (2, 8, '2025-10-15 12:20:00', null, 'Task in ready_for_test', null, 2, 'epic', 'ready_for_test', 'normal'),
+	   (2, 8, '2025-10-15 12:30:00', null, 'Task in test', null, 2, 'epic', 'test', 'normal'),
+	   (2, 8, '2025-10-15 13:25:00', null, 'Task done', null, 2, 'epic', 'done', 'normal');
