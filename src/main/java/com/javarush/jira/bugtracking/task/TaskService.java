@@ -45,6 +45,7 @@ public class TaskService {
     static final String READY_FOR_REVIEW = "ready_for_review";
     static final String IN_PROGRESS = "in_progress";
     static final String TODO = "todo";
+    static final String CANCELED = "canceled";
     
 
     private final Handlers.TaskExtHandler handler;
@@ -180,8 +181,14 @@ public class TaskService {
     }
     
     public long getTimeSpent(Task task, String... statuses) {
-    	if (task == null || task.getId() == null) {
-    		throw new IllegalArgumentException("Task and task id must not be null");
+    	if (task == null) {
+    		throw new IllegalArgumentException("Task must not be null");
+    	}
+    	
+    	Long taskId = task.getId();
+    	
+    	if (taskId == null) {
+    		throw new IllegalArgumentException("Task id must not be null");
     	}
     	
     	long timeSpent = 0;
@@ -201,20 +208,22 @@ public class TaskService {
     			continue;
     		}
     		
-    		String currentStatus = next.getStatusCode();
+    		String currentStatus = current.getStatusCode();
     		String nextStatus = next.getStatusCode();
     		
-    		checkStatusChangePossible(currentStatus, nextStatus);
+    		checkStatusChangePossible(nextStatus,currentStatus);
     		
     		Duration duration = Duration.between(nextUpdated, currentUpdated);
     		timeSpent = duration.toMinutes();
-    		
+    		    		
     		if (timeSpent <= 0) {
-    			log.debug("Ignored non-positive duration: {} -> {}", nextUpdated, currentUpdated);
+    			log.warn("Ignored non-positive duration: {} -> {}", nextUpdated, currentUpdated);
+    			continue;
     		}
     		
-    		if(calculateTimeForStatuses(next.getStatusCode(), statuses)) {
+    		if(calculateTimeForStatuses(nextStatus, statuses)) {
     			totalTimeSpent = totalTimeSpent + timeSpent;
+        		//log.info("currentStatus: {} {} - nextStatus: {} {} = {}", currentStatus, currentUpdated, nextStatus, nextUpdated, timeSpent);
     		}
     	}
     	return totalTimeSpent;

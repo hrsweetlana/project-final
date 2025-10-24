@@ -71,6 +71,7 @@ public class TaskTestData {
     public static final Set<String> notExistTag2 = Set.of("notExist2");
     
     public static final Task task8 = new Task(TASK8_ID, "task-8", "task", "todo",null, PROJECT2_ID, SPRINT7_ID, Set.of("pr2_sprnt7_task8_tag3")); 
+    public static final Task taskWithNullId = new Task(null, "task-8", "task", "todo",null, PROJECT2_ID, SPRINT7_ID, Set.of("pr2_sprnt7_task8_tag3")); 
     public static final TaskTo taskTo1 = new TaskTo(TASK1_ID, "epic-" + TASK1_ID, "Data", "epic", "in_progress", null, PROJECT1_ID, SPRINT1_ID, Set.of("pr1_sprnt1_task1_tag1", "pr1_sprnt1_task1_tag2"));
     public static final TaskTo taskTo2 = new TaskTo(TASK2_ID, "epic-" + TASK2_ID, "Trees", "epic", "in_progress", null, PROJECT1_ID, SPRINT1_ID, Set.of("pr1_sprnt1_task2_tag1", "pr1_sprnt1_task2_tag2"));
     public static final TaskToFull taskToFull1 = new TaskToFull(TASK1_ID, "epic-1", "Data", null, "epic", "in_progress", "normal", null, 4, Set.of("pr1_sprnt1_task1_tag1", "pr1_sprnt1_task1_tag2"), null, new CodeTo(PROJECT1_ID, "PR1"), new CodeTo(SPRINT1_ID, "SP-1.001"), null);
@@ -82,24 +83,23 @@ public class TaskTestData {
     public static final ActivityTo activityTo1ForTask2 = new ActivityTo(ACTIVITY1_ID + 3, TASK2_ID, USER_ID, null, null, "in_progress", "normal", "epic", "Trees", "Trees desc", 4, null);
     public static final ActivityTo updatePriorityCode = new ActivityTo(ACTIVITY1_ID + 4, TASK2_ID, USER_ID, null, null, "ready_for_review", "high", "epic", "Trees UPD", "task UPD", 4, null);
     public static final List<ActivityTo> activityTosForTask2 = List.of(updatePriorityCode, activityTo1ForTask2);
+    
     public static final List<Activity> activitiesForTask8 = List.of(
     	    new Activity(ACTIVITY1_ID, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:18:00"), null, "todo", "normal", "epic", "Task in to do", null, 2),
-    	    new Activity(ACTIVITY1_ID + 1, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:20:00"), null, "in_progress", "normal", "epic", "Task in progres", null, 2),
+    	    new Activity(ACTIVITY1_ID + 1, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:20:00"), null, "in_progress", "normal", "epic", "Task in progress", null, 2),
     	    new Activity(ACTIVITY1_ID + 2, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:31:00"), null, "ready_for_review", "normal", "epic", "Task in ready for review", null, 2),
     	    new Activity(ACTIVITY1_ID + 3, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:35:00"), null, "review", "normal", "epic", "Task in review", null, 2),
-    	    new Activity(ACTIVITY1_ID + 4, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:40:00"), null, "todo", "normal", "epic", "Task in to do", null, 2),
-    	    new Activity(ACTIVITY1_ID + 5, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:50:00"), null, "in_progress", "normal", "epic", "Task in progres", null, 2),
-    	    new Activity(ACTIVITY1_ID + 6, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:00:00"), null, "ready_for_review", "normal", "epic", "Task in ready for review", null, 2),
-    	    new Activity(ACTIVITY1_ID + 7, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:15:00"), null, "review", "normal", "epic", "Task in review", null, 2),
-    	    new Activity(ACTIVITY1_ID + 8, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:25:00"), null, "ready_for_test", "normal", "epic", "Task in ready for test", null, 2),
-    	    new Activity(ACTIVITY1_ID + 9, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:30:00"), null, "test", "normal", "epic", "Task in test", null, 2),
-    	    new Activity(ACTIVITY1_ID + 10, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:40:00"), null, "todo", "normal", "epic", "Task in to do", null, 2),
-    	    new Activity(ACTIVITY1_ID + 11, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T11:00:00"), null, "in_progress", "normal", "epic", "Task in progres", null, 2),
-    	    new Activity(ACTIVITY1_ID + 12, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T12:00:00"), null, "ready_for_review", "normal", "epic", "Task in ready for review", null, 2),
-    	    new Activity(ACTIVITY1_ID + 13, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T12:10:00"), null, "review", "normal", "epic", "Task in review", null, 2),
-    	    new Activity(ACTIVITY1_ID + 14, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T12:20:00"), null, "ready_for_test", "normal", "epic", "Task in ready_for_test", null, 2),
-    	    new Activity(ACTIVITY1_ID + 15, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T12:30:00"), null, "test", "normal", "epic", "Task in test", null, 2),
-    	    new Activity(ACTIVITY1_ID + 16, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T13:25:00"), null, "done", "normal", "epic", "Task done", null, 2)
+    	    new Activity(ACTIVITY1_ID + 4, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:50:00"), null, "in_progress", "normal", "epic", "Task in progress", null, 2),
+    	    new Activity(ACTIVITY1_ID + 5, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:00:00"), null, "ready_for_review", "normal", "epic", "Task in ready for review", null, 2),
+    	    new Activity(ACTIVITY1_ID + 6, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:15:00"), null, "review", "normal", "epic", "Task in review", null, 2),
+    	    new Activity(ACTIVITY1_ID + 7, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:25:00"), null, "ready_for_test", "normal", "epic", "Task in ready for test", null, 2),
+    	    new Activity(ACTIVITY1_ID + 8, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:30:00"), null, "test", "normal", "epic", "Task in test", null, 2),
+    	    new Activity(ACTIVITY1_ID + 9, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T11:00:00"), null, "in_progress", "normal", "epic", "Task in progress", null, 2),
+    	    new Activity(ACTIVITY1_ID + 10, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T12:00:00"), null, "ready_for_review", "normal", "epic", "Task in ready for review", null, 2),
+    	    new Activity(ACTIVITY1_ID + 11, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T12:10:00"), null, "review", "normal", "epic", "Task in review", null, 2),
+    	    new Activity(ACTIVITY1_ID + 12, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T12:20:00"), null, "ready_for_test", "normal", "epic", "Task in ready_for_test", null, 2),
+    	    new Activity(ACTIVITY1_ID + 13, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T12:30:00"), null, "test", "normal", "epic", "Task in test", null, 2),
+    	    new Activity(ACTIVITY1_ID + 14, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T13:25:00"), null, "done", "normal", "epic", "Task done", null, 2)
     	);
 
     public static final UserBelong userTask1Assignment1 = new UserBelong(1L, TASK, USER_ID, "task_developer");
@@ -128,47 +128,171 @@ public class TaskTestData {
         return new ActivityTo(ACTIVITY1_ID, TASK1_ID, USER_ID, null, null, "in_progress", "low", "epic", null, null, 3, null);
     }
     
-    public static List<Activity> activitiesWithoutTestingWaitingStatuses(){
-    	   List<Activity> activities= List.of(
-    	    	    new Activity(ACTIVITY1_ID + 1, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:20:00"), null, "in_progress", "normal", "epic", "Task in progres", null, 2),
-    	    	    new Activity(ACTIVITY1_ID + 2, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:31:00"), null, "ready_for_review", "normal", "epic", "Task in ready for review", null, 2),
-    	    	    new Activity(ACTIVITY1_ID + 3, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:35:00"), null, "review", "normal", "epic", "Task in review", null, 2),
-    	    	    new Activity(ACTIVITY1_ID + 4, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:40:00"), null, "todo", "normal", "epic", "Task in to do", null, 2),
-    	    	    new Activity(ACTIVITY1_ID + 5, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:50:00"), null, "in_progress", "normal", "epic", "Task in progres", null, 2));
-    	    	 return activities;   
+    public static List<Activity> createActivitiesCanceledAfterTodoStatus(){
+    	   List<Activity> activities = List.of(
+    	    	    new Activity(ACTIVITY1_ID, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:18:00"), null, "todo", "normal", "epic", "Task in to do", null, 2),
+    	    	    new Activity(ACTIVITY1_ID + 1, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:20:00"), null, "canceled", "normal", "epic", "Task is canceled", null, 2)
+    	    	);
+    	   return activities;
     }
     
-
-
-        public static Map<String, RefTo> createTaskStatusMap() {
-            Map<String, RefTo> map = new HashMap<>();
+    public static List<Activity> createActivitiesCanceledAfterInProgressStatus(){
+    	List<Activity> activities = List.of(
+    			 new Activity(ACTIVITY1_ID, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:18:00"), null, "todo", "normal", "epic", "Task in to do", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 1, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:20:00"), null, "in_progress", "normal", "epic", "Task in progress", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 2, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:31:00"), null, "ready_for_review", "normal", "epic", "Task in ready for review", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 3, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:35:00"), null, "review", "normal", "epic", "Task in review", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 4, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:50:00"), null, "in_progress", "normal", "epic", "Task in progress", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 5, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:00:00"), null, "canceled", "normal", "epic", "Task is canceled", null, 2)
+    			);
+    	return activities;
+    }
+    
+    public static List<Activity> createActivitiesCanceledAfterReadyForReviewStatus(){
+    	List<Activity> activities = List.of(
+    			 new Activity(ACTIVITY1_ID, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:18:00"), null, "todo", "normal", "epic", "Task in to do", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 1, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:20:00"), null, "in_progress", "normal", "epic", "Task in progress", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 2, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:31:00"), null, "ready_for_review", "normal", "epic", "Task in ready for review", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 3, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:35:00"), null, "review", "normal", "epic", "Task in review", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 4, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:50:00"), null, "in_progress", "normal", "epic", "Task in progress", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 5, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:00:00"), null, "ready_for_review", "normal", "epic", "Task in ready for review", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 6, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:15:00"), null, "canceled", "normal", "epic", "Task is canceled", null, 2)
+    			 );
+    	return activities;
+    }
+    
+    public static List<Activity> createActivitiesCanceledAfterReviewStatus(){
+    	List<Activity> activities = List.of(
+    			 new Activity(ACTIVITY1_ID, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:18:00"), null, "todo", "normal", "epic", "Task in to do", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 1, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:20:00"), null, "in_progress", "normal", "epic", "Task in progress", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 2, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:31:00"), null, "ready_for_review", "normal", "epic", "Task in ready for review", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 3, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:35:00"), null, "review", "normal", "epic", "Task in review", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 4, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:50:00"), null, "in_progress", "normal", "epic", "Task in progress", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 5, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:00:00"), null, "ready_for_review", "normal", "epic", "Task in ready for review", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 6, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:15:00"), null, "review", "normal", "epic", "Task in review", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 7, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:25:00"), null, "canceled", "normal", "epic", "Task is canceled", null, 2)
+    	    	 );
+    	return activities;
+    }
+    
+    public static List<Activity> createActivitiesCanceledAfterReadyForTestStatus(){
+    	List<Activity> activities = List.of(
+    			 new Activity(ACTIVITY1_ID, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:18:00"), null, "todo", "normal", "epic", "Task in to do", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 1, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:20:00"), null, "in_progress", "normal", "epic", "Task in progress", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 2, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:31:00"), null, "ready_for_review", "normal", "epic", "Task in ready for review", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 3, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:35:00"), null, "review", "normal", "epic", "Task in review", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 4, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:50:00"), null, "in_progress", "normal", "epic", "Task in progress", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 5, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:00:00"), null, "ready_for_review", "normal", "epic", "Task in ready for review", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 6, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:15:00"), null, "review", "normal", "epic", "Task in review", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 7, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:25:00"), null, "ready_for_test", "normal", "epic", "Task in ready for test", null, 2),
+    	    	 new Activity(ACTIVITY1_ID + 8, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:30:00"), null, "canceled", "normal", "epic", "Task is canceled", null, 2)
+    	    	);
+    	return activities;
+    }
+    
+    public static List<Activity> createActivitiesCanceledAfterTestStatus(){
+    	List<Activity> activities = List.of( 
+    			new Activity(ACTIVITY1_ID, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:18:00"), null, "todo", "normal", "epic", "Task in to do", null, 2),
+        	    new Activity(ACTIVITY1_ID + 1, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:20:00"), null, "in_progress", "normal", "epic", "Task in progress", null, 2),
+        	    new Activity(ACTIVITY1_ID + 2, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:31:00"), null, "ready_for_review", "normal", "epic", "Task in ready for review", null, 2),
+        	    new Activity(ACTIVITY1_ID + 3, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:35:00"), null, "review", "normal", "epic", "Task in review", null, 2),
+        	    new Activity(ACTIVITY1_ID + 4, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:50:00"), null, "in_progress", "normal", "epic", "Task in progress", null, 2),
+        	    new Activity(ACTIVITY1_ID + 5, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:00:00"), null, "ready_for_review", "normal", "epic", "Task in ready for review", null, 2),
+        	    new Activity(ACTIVITY1_ID + 6, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:15:00"), null, "review", "normal", "epic", "Task in review", null, 2),
+        	    new Activity(ACTIVITY1_ID + 7, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:25:00"), null, "ready_for_test", "normal", "epic", "Task in ready for test", null, 2),
+        	    new Activity(ACTIVITY1_ID + 8, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:30:00"), null, "test", "normal", "epic", "Task in test", null, 2),
+        	    new Activity(ACTIVITY1_ID + 9, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T11:00:00"), null, "canceled", "normal", "epic", "Task is canceled", null, 2)
+    			);
+    	return activities;
+    }
+    
+    public static List<Activity> createActivitiesCanceledAfterDoneStatus(){
+    	List<Activity> activities = List.of( 
+    			new Activity(ACTIVITY1_ID, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:18:00"), null, "todo", "normal", "epic", "Task in to do", null, 2),
+        	    new Activity(ACTIVITY1_ID + 1, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:20:00"), null, "in_progress", "normal", "epic", "Task in progress", null, 2),
+        	    new Activity(ACTIVITY1_ID + 2, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:31:00"), null, "ready_for_review", "normal", "epic", "Task in ready for review", null, 2),
+        	    new Activity(ACTIVITY1_ID + 3, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:35:00"), null, "review", "normal", "epic", "Task in review", null, 2),
+        	    new Activity(ACTIVITY1_ID + 4, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:50:00"), null, "in_progress", "normal", "epic", "Task in progress", null, 2),
+        	    new Activity(ACTIVITY1_ID + 5, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:00:00"), null, "ready_for_review", "normal", "epic", "Task in ready for review", null, 2),
+        	    new Activity(ACTIVITY1_ID + 6, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:15:00"), null, "review", "normal", "epic", "Task in review", null, 2),
+        	    new Activity(ACTIVITY1_ID + 7, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:25:00"), null, "ready_for_test", "normal", "epic", "Task in ready for test", null, 2),
+        	    new Activity(ACTIVITY1_ID + 8, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:30:00"), null, "test", "normal", "epic", "Task in test", null, 2),
+        	    new Activity(ACTIVITY1_ID + 9, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T11:00:00"), null, "in_progress", "normal", "epic", "Task in progress", null, 2),
+        	    new Activity(ACTIVITY1_ID + 10, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T12:00:00"), null, "ready_for_review", "normal", "epic", "Task in ready for review", null, 2),
+        	    new Activity(ACTIVITY1_ID + 11, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T12:10:00"), null, "review", "normal", "epic", "Task in review", null, 2),
+        	    new Activity(ACTIVITY1_ID + 12, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T12:20:00"), null, "ready_for_test", "normal", "epic", "Task in ready_for_test", null, 2),
+        	    new Activity(ACTIVITY1_ID + 13, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T12:30:00"), null, "test", "normal", "epic", "Task in test", null, 2),
+        	    new Activity(ACTIVITY1_ID + 14, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T13:25:00"), null, "done", "normal", "epic", "Task done", null, 2),
+        	    new Activity(ACTIVITY1_ID + 14, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T13:25:00"), null, "canceled", "normal", "epic", "Task canceled", null, 2)
+    			);
+    	return activities;
+    }
+    
+    public static List<Activity> createActivitiesWhenUpdatedIsNull(){
+    	List<Activity> activities = List.of( 
+    			new Activity(ACTIVITY1_ID, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:18:00"), null, "todo", "normal", "epic", "Task in to do", null, 2),
+    			new Activity(ACTIVITY1_ID + 1, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:20:00"), null, "in_progress", "normal", "epic", "Task in progress", null, 2),
+    			new Activity(ACTIVITY1_ID + 2, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:31:00"), null, "ready_for_review", "normal", "epic", "Task in ready for review", null, 2),
+    			new Activity(ACTIVITY1_ID + 3, TASK8_ID, AUTHOR2_ID, null, null, "review", "normal", "epic", "Task in review", null, 2),
+    			new Activity(ACTIVITY1_ID + 4, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:50:00"), null, "in_progress", "normal", "epic", "Task in progress", null, 2)
+    			);
+    	return activities;
+    }
+    
+    public static List<Activity> createActivitiesWhenTimeSpentLessOrEqualsZero(){
+    	List<Activity> activities = List.of( 
+    			new Activity(ACTIVITY1_ID, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:18:00"), null, "todo", "normal", "epic", "Task in to do", null, 2),
+    			new Activity(ACTIVITY1_ID + 1, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:20:00"), null, "in_progress", "normal", "epic", "Task in progress", null, 2),
+    			new Activity(ACTIVITY1_ID + 2, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:31:00"), null, "ready_for_review", "normal", "epic", "Task in ready for review", null, 2),
+    			new Activity(ACTIVITY1_ID + 3, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:25:00"), null, "review", "normal", "epic", "Task in review", null, 2),
+    			new Activity(ACTIVITY1_ID + 4, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:50:00"), null, "in_progress", "normal", "epic", "Task in progress", null, 2)
+    			);
+    	return activities;
+    }
+    
+    public static List<Activity> createActivitiesWhenTaskIdNull(){
+    	List<Activity> activities = List.of( 
+    			new Activity(ACTIVITY1_ID, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:18:00"), null, "todo", "normal", "epic", "Task in to do", null, 2),
+    			new Activity(ACTIVITY1_ID + 1, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:20:00"), null, "in_progress", "normal", "epic", "Task in progress", null, 2),
+    			new Activity(ACTIVITY1_ID + 2, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:31:00"), null, "ready_for_review", "normal", "epic", "Task in ready for review", null, 2),
+    			new Activity(ACTIVITY1_ID + 3, null, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:35:00"), null, "review", "normal", "epic", "Task in review", null, 2),
+    			new Activity(ACTIVITY1_ID + 4, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:50:00"), null, "in_progress", "normal", "epic", "Task in progress", null, 2)
+    			);
+    	return activities;
+    }
+            
+    public static final List<Activity> createActivitesWithWrongStatusOrder = List.of(
+    	    new Activity(ACTIVITY1_ID, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:18:00"), null, "todo", "normal", "epic", "Task in to do", null, 2),
+    	    new Activity(ACTIVITY1_ID + 1, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:20:00"), null, "in_progress", "normal", "epic", "Task in progres", null, 2),
+    	    new Activity(ACTIVITY1_ID + 2, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:31:00"), null, "ready_for_review", "normal", "epic", "Task in ready for review", null, 2),
+    	    new Activity(ACTIVITY1_ID + 3, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:35:00"), null, "review", "normal", "epic", "Task in review", null, 2),
+    	    new Activity(ACTIVITY1_ID + 4, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:40:00"), null, "todo", "normal", "epic", "Task in to do", null, 2),
+    	    new Activity(ACTIVITY1_ID + 5, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T09:50:00"), null, "in_progress", "normal", "epic", "Task in progres", null, 2),
+    	    new Activity(ACTIVITY1_ID + 6, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:00:00"), null, "ready_for_review", "normal", "epic", "Task in ready for review", null, 2),
+    	    new Activity(ACTIVITY1_ID + 7, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:15:00"), null, "review", "normal", "epic", "Task in review", null, 2),
+    	    new Activity(ACTIVITY1_ID + 8, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:25:00"), null, "ready_for_test", "normal", "epic", "Task in ready for test", null, 2),
+    	    new Activity(ACTIVITY1_ID + 9, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:30:00"), null, "test", "normal", "epic", "Task in test", null, 2),
+    	    new Activity(ACTIVITY1_ID + 10, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T10:40:00"), null, "todo", "normal", "epic", "Task in to do", null, 2),
+    	    new Activity(ACTIVITY1_ID + 11, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T11:00:00"), null, "in_progress", "normal", "epic", "Task in progres", null, 2),
+    	    new Activity(ACTIVITY1_ID + 12, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T12:00:00"), null, "ready_for_review", "normal", "epic", "Task in ready for review", null, 2),
+    	    new Activity(ACTIVITY1_ID + 13, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T12:10:00"), null, "review", "normal", "epic", "Task in review", null, 2),
+    	    new Activity(ACTIVITY1_ID + 14, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T12:20:00"), null, "ready_for_test", "normal", "epic", "Task in ready_for_test", null, 2),
+    	    new Activity(ACTIVITY1_ID + 15, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T12:30:00"), null, "test", "normal", "epic", "Task in test", null, 2),
+    	    new Activity(ACTIVITY1_ID + 16, TASK8_ID, AUTHOR2_ID, LocalDateTime.parse("2025-10-15T13:25:00"), null, "done", "normal", "epic", "Task done", null, 2)
+    	);
+    public static Map<String, RefTo> createTaskStatusMap() {
+         Map<String, RefTo> map = new HashMap<>();
 
             map.put("todo", new RefTo(1L, RefType.TASK_STATUS,"todo", "Todo", "in_progress,canceled|"));
             map.put("in_progress", new RefTo(2L, RefType.TASK_STATUS,"in_progress", "In progress", "ready_for_review,canceled|task_developer"));
-            map.put("ready_for_review", new RefTo(3L, RefType.TASK_STATUS, "ready_for_review", "Ready for review", "review,canceled|"));
-            map.put("review", new RefTo(4L, RefType.TASK_STATUS,"review", "Review", "todo,ready_for_test,canceled|task_reviewer"));
+            map.put("ready_for_review", new RefTo(3L, RefType.TASK_STATUS, "ready_for_review", "Ready for review", "in_progress,review,canceled|"));
+            map.put("review", new RefTo(4L, RefType.TASK_STATUS,"review", "Review", "in_progress,ready_for_test,canceled|task_reviewer"));
             map.put("ready_for_test", new RefTo(5L, RefType.TASK_STATUS, "ready_for_test", "Ready for test", "test,canceled|"));
-            map.put("test", new RefTo(6L, RefType.TASK_STATUS, "test", "Test", "done,canceled|task_tester"));
+            map.put("test", new RefTo(6L, RefType.TASK_STATUS, "test", "Test", "done,in_progress,canceled|task_tester"));
             map.put("done", new RefTo(7L, RefType.TASK_STATUS, "done", "Done", "canceled|"));
             map.put("canceled", new RefTo(8L, RefType.TASK_STATUS, "canceled", "Canceled",null));
 
             return map;
         }
-            
-       public static Map<String, String> createStatusChangePossibleMap(){
-    	   Map<String, String> map = new HashMap<>();
-    	   
-    	   map.put("todo", "in_progress,canceled");
-    	   map.put("in_progress", "ready_for_review,canceled");
-    	   map.put("ready_for_review", "review,canceled");
-    	   map.put("review", "todo,ready_for_test,canceled");
-    	   map.put("ready_for_test", "test,canceled");
-    	   map.put("test", "done,canceled");
-    	   map.put("done", "canceled");
-    	   map.put("canceled", null);
-    	   
-    	   return map;
-       } 
-        
 
 }
