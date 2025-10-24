@@ -1,30 +1,10 @@
-## [REST API](http://localhost:8080/doc)
+## List of implemented tasks:
+**1.Project structure - https://miro.com/app/board/uXjVJbjEqg8=/?share_link_id=177443393623**
+**2.Delete social networks: vk, yandex**
+**3.Carry out security sensitive information to separate yml and environment variables**
+**4.Change PostgresQl to H2 for tests**
+**5.Add integration tests for ProfileRestController**
+**6.Add file removal logic in case of transaction error when saving attachment **
+**7.Add functionality for working with tags**
+**8.Add counting time functionality for tasks with different statuses**
 
-## Концепция:
-
-- Spring Modulith
-    - [Spring Modulith: достигли ли мы зрелости модульности](https://habr.com/ru/post/701984/)
-    - [Introducing Spring Modulith](https://spring.io/blog/2022/10/21/introducing-spring-modulith)
-    - [Spring Modulith - Reference documentation](https://docs.spring.io/spring-modulith/docs/current-SNAPSHOT/reference/html/)
-
-```
-  url: jdbc:postgresql://localhost:5432/jira
-  username: jira
-  password: JiraRush
-```
-
-- Есть 2 общие таблицы, на которых не fk
-    - _Reference_ - справочник. Связь делаем по _code_ (по id нельзя, тк id привязано к окружению-конкретной базе)
-    - _UserBelong_ - привязка юзеров с типом (owner, lead, ...) к объекту (таска, проект, спринт, ...). FK вручную будем
-      проверять
-
-## Аналоги
-
-- https://java-source.net/open-source/issue-trackers
-
-## Тестирование
-
-- https://habr.com/ru/articles/259055/
-
-Список выполненных задач:
-...
